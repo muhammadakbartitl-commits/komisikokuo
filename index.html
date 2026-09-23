@@ -1,0 +1,1791 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Catatan Komisi</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600;9..144,700&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#12141B;
+  --surface:#191C24;
+  --surface-2:#20242E;
+  --ink:#ECE4D3;
+  --muted:#82988A;
+  --gold:#C7A263;
+  --gold-bright:#DDB876;
+  --gold-dim: rgba(199,162,99,0.22);
+  --jade:#4F8567;
+  --clay:#B87A5E;
+  --info:#5B93C9;
+  --amber:#D9A441;
+  --line: rgba(236,228,211,0.09);
+  --line-strong: rgba(236,228,211,0.16);
+  --ink-on-gold:#20180E;
+  --ink-on-jade:#0E1912;
+}
+*{box-sizing:border-box;}
+::selection{background:var(--gold-dim);color:var(--ink);}
+
+body{
+  margin:0;
+  background-color:var(--bg);
+  background-image:
+    radial-gradient(ellipse 820px 520px at 50% -12%, rgba(199,162,99,0.07), transparent 60%),
+    repeating-linear-gradient(128deg, rgba(236,228,211,0.014) 0px, rgba(236,228,211,0.014) 1px, transparent 1px, transparent 3px);
+  color:var(--ink);
+  font-family:'Inter',sans-serif;
+  -webkit-font-smoothing:antialiased;
+  padding-bottom:56px;
+}
+.wrap{max-width:480px;margin:0 auto;padding:26px 18px 96px;}
+
+header{margin-bottom:20px;display:flex;justify-content:space-between;align-items:flex-start;padding-bottom:16px;border-bottom:1px solid var(--line);}
+header h1{font-family:'Fraunces',serif;font-weight:600;font-size:25px;margin:0 0 3px;letter-spacing:-0.01em;}
+header p{margin:0;color:var(--muted);font-size:12.5px;}
+.user-chip{display:flex;align-items:center;gap:9px;}
+.avatar-initial{width:32px;height:32px;border-radius:50%;background:transparent;border:1px solid var(--gold-dim);color:var(--gold);display:flex;align-items:center;justify-content:center;font-weight:600;font-size:13px;font-family:'Fraunces',serif;}
+.logout-btn{background:none;border:1px solid var(--line-strong);color:var(--muted);font-size:11px;padding:6px 10px;border-radius:20px;cursor:pointer;font-family:'Inter',sans-serif;}
+.logout-btn:active{border-color:var(--gold-dim);color:var(--gold);}
+
+#authScreen{display:none;flex-direction:column;align-items:center;justify-content:center;min-height:86vh;text-align:center;padding:20px;}
+.brand-ring{width:44px;height:44px;margin-bottom:14px;}
+.brand-ring circle{fill:none;stroke:var(--gold);stroke-width:1.6;stroke-linecap:round;opacity:0.9;}
+#authScreen h1{font-family:'Fraunces',serif;font-size:27px;margin:0 0 6px;font-weight:600;letter-spacing:-0.01em;}
+#authScreen p{color:var(--muted);font-size:13.5px;margin-bottom:22px;}
+#authScreen .card{width:100%;max-width:320px;text-align:left;}
+#authError{color:var(--clay);font-size:12.5px;margin:-4px 0 14px;display:none;line-height:1.5;}
+
+.balance-card{position:relative;border-radius:22px;padding:2px;margin-bottom:18px;background:linear-gradient(120deg,#ff3b6b,#ffb84d,#e8ff5c,#4dffa0,#4dd4ff,#a06bff,#ff3b6b);background-size:300% 300%;animation:rgbFlow 7s linear infinite;}
+.balance-card-inner{position:relative;overflow:hidden;background:linear-gradient(165deg,var(--surface-2),var(--surface));border-radius:20px;padding:24px 20px 20px;}
+@keyframes rgbFlow{0%{background-position:0% 50%;}50%{background-position:100% 50%;}100%{background-position:0% 50%;}}
+.ring-mark{position:absolute;top:-38px;right:-38px;width:190px;height:190px;pointer-events:none;}
+.ring-mark circle{fill:none;stroke:var(--gold);stroke-width:1.3;opacity:0.16;stroke-linecap:round;}
+.balance-tabs{position:relative;display:flex;gap:3px;margin-bottom:18px;background:var(--surface-2);border:1px solid var(--line);border-radius:11px;padding:3px;}
+.tab-btn, .staff-tab-btn{position:relative;flex:1;background:transparent;border:none;color:var(--muted);font-family:'Inter',sans-serif;font-size:12px;font-weight:600;padding:8px 0;border-radius:8px;cursor:pointer;transition:background-color 0.15s,color 0.15s;}
+.tab-btn.active, .staff-tab-btn.active{background:var(--gold);color:var(--ink-on-gold);}
+.balance-label{position:relative;font-size:11px;letter-spacing:0.1em;text-transform:uppercase;color:var(--muted);margin-bottom:8px;}
+.balance-amount{position:relative;font-family:'Fraunces',serif;font-size:40px;font-weight:600;color:var(--gold-bright);line-height:1.05;letter-spacing:-0.02em;}
+.balance-sub{position:relative;display:flex;justify-content:space-between;margin-top:16px;padding-top:14px;border-top:1px dashed var(--line-strong);font-size:12.5px;color:var(--muted);}
+.balance-sub b{color:var(--ink);font-family:'IBM Plex Mono',monospace;font-weight:600;}
+
+.card{background:var(--surface);border:1px solid var(--line);border-radius:16px;padding:20px;margin-bottom:18px;}
+.card h2{font-family:'Fraunces',serif;font-size:16.5px;font-weight:600;margin:0 0 15px;letter-spacing:-0.005em;}
+.field{margin-bottom:13px;}
+.field label{display:block;font-size:11.5px;color:var(--muted);margin-bottom:6px;}
+.field select, .field input, .field textarea{width:100%;background:var(--surface-2);border:1px solid var(--line-strong);color:var(--ink);font-family:'Inter',sans-serif;font-size:14.5px;padding:11px 12px;border-radius:10px;appearance:none;}
+.field select{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20' fill='none' stroke='%2382988A' stroke-width='1.6'%3E%3Cpath d='M5 7.5l5 5 5-5'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 12px center;background-size:15px;padding-right:34px;}
+.field textarea{resize:vertical;min-height:58px;}
+.field select:focus, .field input:focus, .field textarea:focus{outline:none;border-color:var(--gold);box-shadow:0 0 0 3px var(--gold-dim);}
+.row2{display:flex;gap:10px;}
+.row2 .field{flex:1;}
+#jarakField{display:none;}
+
+.preview{display:flex;justify-content:space-between;align-items:center;background:var(--surface-2);border:1px solid var(--line);border-radius:10px;padding:11px 13px;margin-bottom:15px;font-size:12.5px;color:var(--muted);}
+.preview b{font-family:'IBM Plex Mono',monospace;color:var(--jade);font-size:16.5px;font-weight:600;}
+
+.btn{width:100%;border:none;padding:13px;border-radius:11px;font-family:'Inter',sans-serif;font-weight:700;font-size:14.5px;cursor:pointer;transition:opacity 0.15s;}
+.btn:active{transform:translateY(1px);}
+.btn:focus-visible{outline:2px solid var(--gold);outline-offset:2px;}
+.btn-teal{background:var(--jade);color:var(--ink-on-jade);}
+.btn-gold{background:var(--gold);color:var(--ink-on-gold);}
+.btn-outline{background:transparent;border:1px solid var(--line-strong);color:var(--ink);}
+
+.list-header{display:flex;justify-content:space-between;align-items:baseline;margin:26px 0 10px;}
+.list-header h2{font-family:'Fraunces',serif;font-size:16.5px;margin:0;font-weight:600;}
+.date-group-title{font-size:11.5px;color:var(--muted);text-transform:uppercase;letter-spacing:0.08em;margin:18px 0 7px;}
+.entry{display:flex;align-items:center;gap:8px;padding:12px 2px;border-bottom:1px dotted var(--line-strong);}
+.entry-info{flex:1;min-width:0;}
+.entry-title{font-size:14px;font-weight:500;}
+.entry-title.adj{color:var(--gold);}
+.entry-sub{font-size:12px;color:var(--muted);margin-top:2px;}
+.entry-amount{font-family:'IBM Plex Mono',monospace;font-weight:600;color:var(--gold);font-size:14.5px;white-space:nowrap;}
+.entry-amount.neg{color:var(--clay);}
+.del-btn{background:transparent;border:none;color:var(--muted);font-size:15px;cursor:pointer;padding:2px 4px;line-height:1;}
+.del-btn:active{color:var(--clay);}
+.empty-state{text-align:center;color:var(--muted);font-size:13.5px;padding:34px 10px;}
+.loading{text-align:center;color:var(--muted);padding:34px;font-size:13.5px;}
+.spinner{width:26px;height:26px;border:3px solid rgba(236,228,211,0.14);border-top-color:var(--gold);border-radius:50%;animation:spin 0.7s linear infinite;margin:0 auto 10px;}
+@keyframes spin{to{transform:rotate(360deg);}}
+#initialLoadingScreen{position:fixed;inset:0;background:var(--bg);display:flex;flex-direction:column;align-items:center;justify-content:center;z-index:200;}
+#initialLoadingScreen .spinner{width:34px;height:34px;border-width:3px;}
+#initialLoadingScreen p{color:var(--muted);font-size:13px;margin-top:12px;}
+
+#adminToggleBtn{display:none;margin-bottom:18px;}
+#adminSection{display:none;}
+.admin-badge{display:inline-block;background:var(--gold-dim);color:var(--gold-bright);border:1px solid var(--gold-dim);font-size:10.5px;font-weight:700;padding:3px 10px;border-radius:20px;letter-spacing:0.04em;margin-bottom:12px;}
+.staff-item{display:flex;justify-content:space-between;align-items:center;padding:12px 12px;border:1px solid var(--line);border-radius:12px;margin-bottom:9px;cursor:pointer;}
+.staff-item:active{border-color:var(--gold-dim);}
+.staff-name{font-size:14px;font-weight:600;}
+.staff-email{font-size:11.5px;color:var(--muted);}
+.staff-saldo{font-family:'IBM Plex Mono',monospace;color:var(--gold);font-size:13.5px;}
+.periode-item{display:flex;justify-content:space-between;align-items:center;padding:12px 12px;border:1px solid var(--line);border-radius:12px;margin-bottom:9px;cursor:pointer;}
+.periode-item:active{border-color:var(--gold-dim);}
+.periode-item-label{font-size:13.5px;font-weight:500;}
+.periode-item-amount{font-family:'IBM Plex Mono',monospace;color:var(--gold);font-size:14px;font-weight:600;}
+.back-link{color:var(--jade);font-size:13px;background:none;border:none;cursor:pointer;padding:0 0 13px;font-weight:600;}
+
+.page-view{display:none;}
+.page-view.active{display:block;animation:pageIn 0.32s cubic-bezier(0.22,1,0.36,1) both;}
+@keyframes pageIn{from{opacity:0;transform:translateY(8px);}to{opacity:1;transform:translateY(0);}}
+
+.bottom-nav{position:fixed;left:0;right:0;bottom:0;z-index:120;display:flex;max-width:480px;margin:0 auto;background:rgba(25,28,36,0.92);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);border-top:1px solid var(--line-strong);padding:8px 10px calc(6px + env(safe-area-inset-bottom,0px));}
+.nav-btn{position:relative;z-index:2;flex:1;background:none;border:none;display:flex;flex-direction:column;align-items:center;gap:3px;padding:6px 0 4px;color:var(--muted);font-family:'Inter',sans-serif;font-size:10px;font-weight:600;cursor:pointer;transition:color 0.2s;}
+.nav-btn.active{color:var(--gold-bright);}
+.nav-icon{width:20px;height:20px;}
+.nav-indicator{position:absolute;top:2px;height:2.5px;width:20px;border-radius:3px;background:var(--gold);transition:left 0.32s cubic-bezier(0.4,0,0.2,1);left:14px;}
+
+.btn-danger{background:transparent;border:1px solid rgba(184,122,94,0.45);color:var(--clay);}
+
+.icon-btn{background:transparent;border:1px solid var(--line-strong);color:var(--muted);width:32px;height:32px;border-radius:50%;display:flex;align-items:center;justify-content:center;cursor:pointer;}
+.icon-btn:active{border-color:var(--gold-dim);color:var(--gold);}
+
+.backup-detail{position:relative;margin-top:12px;padding-top:11px;border-top:1px dashed var(--line-strong);}
+.backup-row{display:flex;justify-content:space-between;align-items:center;font-size:12.5px;color:var(--muted);padding:3px 0;}
+.backup-row b{font-family:'IBM Plex Mono',monospace;color:var(--ink);font-weight:600;font-size:13px;}
+.backup-row.disqualified b{color:var(--clay);}
+
+.kehadiran-row{display:flex;gap:8px;margin-bottom:10px;}
+.keh-btn{flex:1;background:var(--surface-2);border:1px solid var(--line-strong);border-radius:10px;padding:10px 4px;color:var(--muted);font-family:'Inter',sans-serif;font-size:12.5px;font-weight:600;cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:5px;}
+.keh-dot{width:8px;height:8px;border-radius:50%;background:var(--muted);}
+.keh-btn[data-status="masuk"].active{border-color:var(--jade);color:var(--jade);background:rgba(79,133,103,0.14);}
+.keh-btn[data-status="masuk"].active .keh-dot{background:var(--jade);}
+.keh-btn[data-status="izin"].active{border-color:var(--info);color:var(--info);background:rgba(91,147,201,0.14);}
+.keh-btn[data-status="izin"].active .keh-dot{background:var(--info);}
+.keh-btn[data-status="sakit"].active{border-color:var(--amber);color:var(--amber);background:rgba(217,164,65,0.14);}
+.keh-btn[data-status="sakit"].active .keh-dot{background:var(--amber);}
+.keh-btn[data-status="alfa"].active{border-color:var(--clay);color:var(--clay);background:rgba(184,122,94,0.14);}
+.keh-btn[data-status="alfa"].active .keh-dot{background:var(--clay);}
+.keh-hint{font-size:11.5px;color:var(--muted);margin:0;}
+
+.kal-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;}
+.kal-header h2{margin:0;}
+.kal-nav-btn{background:var(--surface-2);border:1px solid var(--line-strong);color:var(--ink);width:30px;height:30px;border-radius:8px;font-size:16px;cursor:pointer;}
+.kal-weekdays{display:grid;grid-template-columns:repeat(7,1fr);text-align:center;font-size:10.5px;color:var(--muted);margin-bottom:6px;}
+.kal-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:4px;}
+.kal-cell{aspect-ratio:1;border-radius:8px;background:var(--surface-2);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;cursor:pointer;border:1px solid transparent;}
+.kal-cell.kal-empty{background:transparent;cursor:default;}
+.kal-day{font-size:11.5px;font-weight:600;color:var(--ink);}
+.kal-amt{font-family:'IBM Plex Mono',monospace;font-size:8px;color:var(--gold);}
+.kal-cell.kal-today{border-color:var(--gold);}
+.kal-cell.kal-masuk{background:rgba(79,133,103,0.16);}
+.kal-cell.kal-izin{background:rgba(91,147,201,0.16);}
+.kal-cell.kal-sakit{background:rgba(217,164,65,0.16);}
+.kal-cell.kal-alfa{background:rgba(184,122,94,0.2);}
+.kal-legend{display:flex;flex-wrap:wrap;gap:12px;margin-top:14px;font-size:10.5px;color:var(--muted);}
+.kal-legend span{display:flex;align-items:center;gap:5px;}
+.kal-dot{width:8px;height:8px;border-radius:50%;display:inline-block;}
+.kal-dot-masuk{background:var(--jade);}
+.kal-dot-izin{background:var(--info);}
+.kal-dot-sakit{background:var(--amber);}
+.kal-dot-alfa{background:var(--clay);}
+
+.settings-label{font-size:11px;font-weight:700;letter-spacing:0.06em;text-transform:uppercase;color:var(--gold);margin:0 0 4px;}
+.warna-row{display:flex;align-items:center;gap:8px;}
+.warna-row input[type="color"]{width:36px;height:36px;padding:0;border:1px solid var(--line-strong);border-radius:8px;background:none;cursor:pointer;}
+.warna-swatch{width:26px;height:26px;border-radius:50%;border:2px solid var(--line-strong);cursor:pointer;padding:0;}
+.warna-swatch.active{border-color:var(--ink);}
+
+.periode-badge{font-size:9.5px;font-weight:700;padding:2px 7px;border-radius:20px;margin-left:6px;}
+.periode-badge.backup{background:rgba(199,162,99,0.18);color:var(--gold-bright);}
+.periode-badge.alfa{background:rgba(184,122,94,0.18);color:var(--clay);}
+
+:root[data-theme="light"]{
+  --bg:#F3EFE6;
+  --surface:#FFFFFF;
+  --surface-2:#EEE8DA;
+  --ink:#241F16;
+  --muted:#79715F;
+  --line: rgba(36,31,22,0.10);
+  --line-strong: rgba(36,31,22,0.18);
+}
+:root[data-theme="light"] body{
+  background-image:
+    radial-gradient(ellipse 820px 520px at 50% -12%, rgba(199,162,99,0.10), transparent 60%),
+    repeating-linear-gradient(128deg, rgba(36,31,22,0.014) 0px, rgba(36,31,22,0.014) 1px, transparent 1px, transparent 3px);
+}
+:root[data-theme="light"] .bottom-nav{background:rgba(255,255,255,0.88);}
+
+.modal-overlay{display:none;position:fixed;inset:0;background:rgba(6,10,8,0.66);align-items:center;justify-content:center;padding:20px;z-index:50;}
+.modal-overlay.show{display:flex;}
+.modal-box{background:var(--surface);border:1px solid var(--line);border-top:2px solid var(--gold);border-radius:18px;padding:24px;max-width:360px;width:100%;}
+.modal-box p{font-size:14.5px;line-height:1.55;margin:0 0 20px;white-space:pre-line;}
+.modal-btns{display:flex;gap:10px;}
+.modal-btns button{flex:1;}
+
+.switch{position:relative;display:inline-block;width:40px;height:22px;flex-shrink:0;}
+.switch input{opacity:0;width:0;height:0;}
+.switch-track{position:absolute;cursor:pointer;inset:0;background:#3B2C24;border-radius:22px;transition:0.15s;}
+.switch-track:before{position:absolute;content:"";height:16px;width:16px;left:3px;bottom:3px;background:var(--ink);border-radius:50%;transition:0.15s;}
+.switch input:checked + .switch-track{background:var(--jade);}
+.switch input:checked + .switch-track:before{transform:translateX(18px);}
+.staff-item.nonaktif{opacity:0.5;}
+.status-tag{font-size:10px;font-weight:700;padding:3px 8px;border-radius:20px;letter-spacing:0.03em;}
+.status-tag.aktif{background:rgba(79,133,103,0.18);color:#8FBA9E;}
+.status-tag.nonaktif{background:rgba(184,122,94,0.18);color:var(--clay);}
+
+#blockedScreen{display:none;flex-direction:column;align-items:center;justify-content:center;min-height:86vh;text-align:center;padding:30px 20px;}
+#blockedScreen h1{font-family:'Fraunces',serif;font-size:23px;margin-bottom:11px;color:var(--clay);}
+#blockedScreen p{color:var(--muted);font-size:14px;line-height:1.6;margin-bottom:24px;max-width:300px;}
+
+.rgb-strip{position:fixed;top:0;left:0;right:0;height:4px;z-index:300;background:linear-gradient(90deg,#ff3b6b,#ffb84d,#e8ff5c,#4dffa0,#4dd4ff,#a06bff,#ff3b6b);background-size:300% 100%;animation:rgbSlide 4s linear infinite;pointer-events:none;}
+@keyframes rgbSlide{0%{background-position:0% 50%;}100%{background-position:300% 50%;}}
+
+@keyframes appIn{from{opacity:0;transform:translateY(14px) scale(0.98);}to{opacity:1;transform:translateY(0) scale(1);}}
+#appScreen{animation:appIn 0.5s cubic-bezier(0.22,1,0.36,1) both;}
+
+.btn{position:relative;overflow:hidden;}
+.btn-ripple{position:absolute;border-radius:50%;pointer-events:none;background:radial-gradient(circle,rgba(255,255,255,0.6),rgba(199,162,99,0.35) 45%,transparent 72%);transform:scale(0);animation:rippleOut 0.55s ease-out;}
+@keyframes rippleOut{to{transform:scale(1);opacity:0;}}
+
+.credit-mark{text-align:center;font-size:10.5px;font-weight:700;letter-spacing:0.04em;margin:28px 0 6px;background:linear-gradient(90deg,#ff3b6b,#ffb84d,#e8ff5c,#4dffa0,#4dd4ff,#a06bff,#ff3b6b);background-size:300% 100%;-webkit-background-clip:text;background-clip:text;color:transparent;animation:rgbSlide 5s linear infinite;opacity:0.9;}
+
+@media (prefers-reduced-motion: reduce){
+  .btn, .tab-btn, .staff-tab-btn, .logout-btn, .staff-item, .periode-item, .nav-indicator, .nav-btn{transition:none;}
+  .balance-card, .rgb-strip, .credit-mark{animation:none;}
+  #appScreen{animation:none;}
+  .page-view.active{animation:none;}
+  .btn-ripple{display:none;}
+}
+</style>
+</head>
+<body>
+<script>
+  function tampilkanErrorDebug(msg){
+    let el = document.getElementById('debugBanner');
+    if(!el){
+      el = document.createElement('div');
+      el.id = 'debugBanner';
+      el.style.cssText = 'position:fixed;top:0;left:0;right:0;background:#c0392b;color:#fff;padding:10px 12px;font-size:12px;font-family:monospace;z-index:9999;white-space:pre-wrap;max-height:40vh;overflow:auto;';
+      document.body.prepend(el);
+    }
+    el.textContent += (el.textContent ? '\n\n' : '') + msg;
+  }
+  window.addEventListener('error', function(e){
+    tampilkanErrorDebug('ERROR: ' + e.message + (e.filename ? ('\n(' + e.filename + ':' + e.lineno + ')') : ''));
+  });
+  window.addEventListener('unhandledrejection', function(e){
+    tampilkanErrorDebug('PROMISE ERROR: ' + (e.reason && e.reason.message ? e.reason.message : e.reason));
+  });
+</script>
+
+<div class="rgb-strip"></div>
+
+<div id="initialLoadingScreen">
+  <div class="spinner"></div>
+  <p>Memuat...</p>
+</div>
+
+<div id="authScreen">
+  <svg class="brand-ring" viewBox="0 0 44 44" xmlns="http://www.w3.org/2000/svg"><circle cx="22" cy="22" r="17" stroke-dasharray="98 10" transform="rotate(-40 22 22)"/></svg>
+  <h1>Catatan Komisi</h1>
+  <p id="authSubtitle">Masuk ke akun kamu</p>
+  <p id="userCountText" style="display:none;margin-top:-14px;font-size:12.5px;color:var(--jade);"></p>
+  <div class="card">
+    <div class="field" id="namaFieldWrap" style="display:none;">
+      <label for="authNama">Nama</label>
+      <input type="text" id="authNama" placeholder="Nama kamu">
+    </div>
+    <div class="field">
+      <label for="authEmail">Email</label>
+      <input type="email" id="authEmail" placeholder="email@contoh.com">
+    </div>
+    <div class="field">
+      <label for="authPassword">Password</label>
+      <input type="password" id="authPassword" placeholder="Minimal 6 karakter">
+    </div>
+    <div id="authError"></div>
+    <button class="btn btn-teal" id="authSubmitBtn">Masuk</button>
+  </div>
+  <button class="back-link" id="forgotPasswordBtn" style="margin-top:6px;">Lupa password?</button>
+  <button class="back-link" id="authToggleBtn" style="margin-top:2px;">Belum punya akun? Daftar di sini</button>
+  <div class="credit-mark">by Vito</div>
+</div>
+
+<div id="blockedScreen">
+  <h1>Akses Ditutup</h1>
+  <p id="blockedText">Maaf, akun kamu tidak bisa digunakan. Silakan hubungi admin.</p>
+  <button class="btn btn-outline" id="blockedBackBtn" style="max-width:220px;">Kembali ke Halaman Login</button>
+</div>
+
+<div class="wrap" id="appScreen" style="display:none;">
+  <header>
+    <div>
+      <h1>Catatan Komisi</h1>
+      <p>Rekap tamu &amp; saldo harian</p>
+    </div>
+    <div class="user-chip">
+      <button class="icon-btn" id="settingsToggleBtn" aria-label="Pengaturan"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" width="18" height="18"><circle cx="12" cy="12" r="2.8"/><path d="M19.4 13.5a1.7 1.7 0 0 0 .34 1.87l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.7 1.7 0 0 0-1.87-.34 1.7 1.7 0 0 0-1 1.55V19.6a2 2 0 1 1-4 0v-.09a1.7 1.7 0 0 0-1-1.55 1.7 1.7 0 0 0-1.87.34l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.7 1.7 0 0 0 .34-1.87 1.7 1.7 0 0 0-1.55-1H4.4a2 2 0 1 1 0-4h.09a1.7 1.7 0 0 0 1.55-1 1.7 1.7 0 0 0-.34-1.87l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.7 1.7 0 0 0 1.87.34H10.5a1.7 1.7 0 0 0 1-1.55V4.4a2 2 0 1 1 4 0v.09a1.7 1.7 0 0 0 1 1.55 1.7 1.7 0 0 0 1.87-.34l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.7 1.7 0 0 0-.34 1.87V10.5a1.7 1.7 0 0 0 1.55 1h.09a2 2 0 1 1 0 4h-.09a1.7 1.7 0 0 0-1.55 1z"/></svg></button>
+      <div class="avatar-initial" id="avatarInitial">?</div>
+      <button class="logout-btn" id="logoutBtn">Keluar</button>
+    </div>
+  </header>
+
+  <button class="btn btn-outline" id="adminToggleBtn">Buka Mode Admin</button>
+
+  <div id="personalSection">
+    <div class="page-view active" data-page="beranda">
+    <div class="balance-card">
+    <div class="balance-card-inner">
+      <svg class="ring-mark" viewBox="0 0 190 190" xmlns="http://www.w3.org/2000/svg"><circle cx="95" cy="95" r="80" stroke-dasharray="472 40" transform="rotate(-38 95 95)"/></svg>
+      <div class="balance-tabs">
+        <button class="tab-btn" data-filter="today">Hari Ini</button>
+        <button class="tab-btn active" data-filter="periode">Periode Ini</button>
+        <button class="tab-btn" data-filter="all">Semua Waktu</button>
+      </div>
+      <div class="balance-label" id="balanceLabel">Total Saldo</div>
+      <div class="balance-amount" id="balanceAmount">Rp0</div>
+      <div class="balance-sub"><span id="balanceSubLabel">Jumlah Catatan</span><b id="guestCount">0</b></div>
+      <div class="backup-detail" id="backupDetail" style="display:none;">
+        <div class="backup-row"><span>Komisi Asli</span><b id="backupKomisiAsli">Rp0</b></div>
+        <div class="backup-row" id="backupRowNominal"><span>Nominal Backup</span><b id="backupNominalTampil">Rp0</b></div>
+      </div>
+    </div>
+    </div>
+    <button class="back-link" id="resetPeriodeBtn" style="color:var(--clay);margin:-8px 0 16px;">⟲ Reset Periode Berjalan</button>
+
+    <div class="card">
+      <h2>Kehadiran Hari Ini</h2>
+      <div class="kehadiran-row">
+        <button class="keh-btn" id="kehMasukBtn" data-status="masuk"><span class="keh-dot"></span>Masuk</button>
+        <button class="keh-btn" id="kehSakitBtn" data-status="sakit"><span class="keh-dot"></span>Sakit</button>
+        <button class="keh-btn" id="kehAlfaBtn" data-status="alfa"><span class="keh-dot"></span>Alfa</button>
+      </div>
+      <p class="keh-hint" id="kehStatusHint">Belum diisi untuk hari ini.</p>
+    </div>
+    </div>
+
+    <div class="page-view" data-page="tambah">
+    <div class="card">
+      <h2>Tambah Tamu</h2>
+      <div class="field"><label for="tanggal">Tanggal</label><input type="date" id="tanggal"></div>
+      <div class="field">
+        <label for="jenis">Jenis Layanan</label>
+        <select id="jenis">
+          <option value="reflexology">Reflexology</option>
+          <option value="athletic">Athletic Massage</option>
+          <option value="seitai">Seitai</option>
+          <option value="home">Home Service</option>
+        </select>
+      </div>
+      <div class="row2">
+        <div class="field"><label for="durasi">Durasi</label><select id="durasi"></select></div>
+        <div class="field" id="jarakField"><label for="jarak">Jarak (KM)</label><input type="number" id="jarak" min="0" step="0.1" placeholder="0"></div>
+      </div>
+      <div class="preview"><span>Komisi</span><b id="previewAmount">Rp0</b></div>
+      <button class="btn btn-teal" id="addBtn">+ Tambah Tamu</button>
+    </div>
+    </div>
+
+    <div class="page-view" data-page="kalender">
+    <div class="card">
+      <div class="kal-header">
+        <button class="kal-nav-btn" id="kalPrevBtn" aria-label="Bulan sebelumnya">‹</button>
+        <h2 id="kalenderMonthLabel">-</h2>
+        <button class="kal-nav-btn" id="kalNextBtn" aria-label="Bulan berikutnya">›</button>
+      </div>
+      <div class="kal-weekdays"><span>M</span><span>S</span><span>S</span><span>R</span><span>K</span><span>J</span><span>S</span></div>
+      <div class="kal-grid" id="kalenderGrid"></div>
+      <div class="kal-legend">
+        <span><i class="kal-dot kal-dot-masuk"></i>Masuk</span>
+        <span><i class="kal-dot kal-dot-izin"></i>Izin</span>
+        <span><i class="kal-dot kal-dot-sakit"></i>Sakit</span>
+        <span><i class="kal-dot kal-dot-alfa"></i>Alfa</span>
+      </div>
+    </div>
+
+    <div class="card" id="kalenderDetailCard" style="display:none;">
+      <h2 id="kalenderDetailTitle">-</h2>
+      <div class="kehadiran-row">
+        <button class="keh-btn" data-status="masuk"><span class="keh-dot"></span>Masuk</button>
+        <button class="keh-btn" data-status="izin"><span class="keh-dot"></span>Izin</button>
+        <button class="keh-btn" data-status="sakit"><span class="keh-dot"></span>Sakit</button>
+        <button class="keh-btn" data-status="alfa"><span class="keh-dot"></span>Alfa</button>
+      </div>
+      <div class="list-header" style="margin-top:18px;"><h2>Catatan Tanggal Ini</h2></div>
+      <div id="kalenderDetailRecords"></div>
+    </div>
+    </div>
+
+    <div class="page-view" data-page="riwayat">
+    <div class="card" id="riwayatBulananCard" style="display:none;">
+      <h2>Riwayat Bulanan</h2>
+      <p style="font-size:12px;color:var(--muted);margin:-8px 0 12px;">Tutup buku tiap tanggal 20. Tap salah satu untuk lihat detailnya.</p>
+      <div id="riwayatBulananContainer"></div>
+    </div>
+
+    <div class="list-header">
+      <h2 id="listHeaderTitle">Riwayat Saya</h2>
+      <button class="back-link" id="clearPeriodeFilterBtn" style="display:none;padding:0;">× Kembali ke periode berjalan</button>
+    </div>
+    <div id="listContainer"><div class="loading"><div class="spinner"></div>Memuat data...</div></div>
+    </div>
+
+    <nav class="bottom-nav" id="navPersonal">
+      <button class="nav-btn active" data-page="beranda"><svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 11.5 12 4l8 7.5"/><path d="M6 10v9a1 1 0 0 0 1 1h3v-6h4v6h3a1 1 0 0 0 1-1v-9"/></svg><span>Beranda</span></button>
+      <button class="nav-btn" data-page="tambah"><svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg><span>Tambah</span></button>
+      <button class="nav-btn" data-page="kalender"><svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3.5" y="5" width="17" height="15.5" rx="2"/><path d="M3.5 9.5h17M8 3v4M16 3v4"/></svg><span>Kalender</span></button>
+      <button class="nav-btn" data-page="riwayat"><svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M8 6h12M8 12h12M8 18h12"/><circle cx="4" cy="6" r="1"/><circle cx="4" cy="12" r="1"/><circle cx="4" cy="18" r="1"/></svg><span>Riwayat</span></button>
+      <div class="nav-indicator"></div>
+    </nav>
+  </div>
+
+
+  <div id="adminSection">
+    <span class="admin-badge">MODE ADMIN</span>
+    <button class="back-link" id="adminBackBtn">← Kembali ke catatan saya</button>
+
+    <button class="btn btn-outline" id="backupBtn" style="margin-bottom:16px;">⬇ Download Backup Data</button>
+
+    <div id="staffListView">
+      <button class="btn btn-gold" id="tambahStafToggleBtn" style="margin-bottom:14px;">+ Tambah Staf Baru</button>
+
+      <div class="card" id="tambahStafCard" style="display:none;">
+        <h2>Akun Staf Baru</h2>
+        <div class="field"><label for="tambahStafNama">Nama</label><input type="text" id="tambahStafNama" placeholder="Nama staf"></div>
+        <div class="field"><label for="tambahStafEmail">Email</label><input type="email" id="tambahStafEmail" placeholder="email@contoh.com"></div>
+        <div class="field"><label for="tambahStafPassword">Password Sementara</label><input type="text" id="tambahStafPassword" placeholder="Minimal 6 karakter"></div>
+        <div id="tambahStafError" style="color:var(--clay);font-size:12.5px;margin:-4px 0 14px;display:none;"></div>
+        <button class="btn btn-teal" id="tambahStafSubmitBtn">Buat Akun</button>
+        <button class="back-link" id="tambahStafCancelBtn" style="margin-top:8px;">Batal</button>
+      </div>
+
+      <div class="card">
+        <h2>Pilih Staf</h2>
+        <div id="staffListContainer"><div class="loading"><div class="spinner"></div>Memuat daftar staf...</div></div>
+      </div>
+    </div>
+
+    <div id="staffDetailView" style="display:none;">
+      <button class="back-link" id="staffBackBtn">← Daftar staf</button>
+
+      <div class="page-view active" data-page="ringkasan">
+      <div class="balance-card">
+      <div class="balance-card-inner">
+        <svg class="ring-mark" viewBox="0 0 190 190" xmlns="http://www.w3.org/2000/svg"><circle cx="95" cy="95" r="80" stroke-dasharray="472 40" transform="rotate(-38 95 95)"/></svg>
+        <div class="balance-tabs">
+          <button class="staff-tab-btn" data-filter="today">Hari Ini</button>
+          <button class="staff-tab-btn active" data-filter="periode">Periode Ini</button>
+          <button class="staff-tab-btn" data-filter="all">Semua Waktu</button>
+        </div>
+        <div class="balance-label" id="staffNameLabel">Saldo Staf</div>
+        <div class="balance-amount" id="staffBalanceAmount">Rp0</div>
+        <div class="balance-sub"><span id="staffBalanceSubLabel">Jumlah Catatan</span><b id="staffCount">0</b></div>
+        <div class="backup-detail" id="staffBackupDetail" style="display:none;">
+          <div class="backup-row"><span>Komisi Asli</span><b id="staffBackupKomisiAsli">Rp0</b></div>
+          <div class="backup-row" id="staffBackupRowNominal"><span>Nominal Backup</span><b id="staffBackupNominalTampil">Rp0</b></div>
+        </div>
+      </div>
+      </div>
+      </div>
+
+      <div class="page-view" data-page="kelola">
+      <div class="card">
+        <h2>Kontrol Akun</h2>
+        <div class="field" style="display:flex;align-items:center;justify-content:space-between;">
+          <label style="margin:0;" for="staffAktifSwitch">Status akun (bisa dipakai login)</label>
+          <label class="switch">
+            <input type="checkbox" id="staffAktifSwitch">
+            <span class="switch-track"></span>
+          </label>
+        </div>
+        <div class="field" style="margin-top:13px;"><label for="editStafNama">Nama Staf</label><input type="text" id="editStafNama" placeholder="Nama staf"></div>
+        <button class="btn btn-outline" id="editStafNamaBtn">Simpan Nama</button>
+        <button class="btn btn-outline" id="resetPasswordBtn" style="margin-top:9px;">Kirim Email Reset Password</button>
+        <button class="btn btn-danger" id="hapusStafBtn" style="margin-top:9px;">Hapus Akun</button>
+      </div>
+
+      <div class="card">
+        <h2>Sesuaikan Saldo</h2>
+        <div class="row2">
+          <div class="field"><label for="adminTipe">Tipe</label>
+            <select id="adminTipe"><option value="tambah">Tambah (+)</option><option value="kurang">Kurangi (-)</option></select>
+          </div>
+          <div class="field"><label for="adminNominal">Nominal (Rp)</label><input type="number" id="adminNominal" min="0" placeholder="0"></div>
+        </div>
+        <div class="field"><label for="adminCatatan">Catatan / Alasan</label><textarea id="adminCatatan" placeholder="Contoh: koreksi tamu tanggal 25 belum tercatat"></textarea></div>
+        <button class="btn btn-gold" id="adminSubmitBtn">Simpan Penyesuaian</button>
+      </div>
+      </div>
+
+      <div class="page-view" data-page="riwayat">
+      <div class="card" id="staffRiwayatBulananCard" style="display:none;">
+        <h2>Riwayat Bulanan</h2>
+        <p style="font-size:12px;color:var(--muted);margin:-8px 0 12px;">Tutup buku tiap tanggal 20. Tap salah satu untuk lihat detailnya.</p>
+        <div id="staffRiwayatBulananContainer"></div>
+      </div>
+      <div class="list-header">
+        <h2 id="staffListHeaderTitle">Riwayat Staf</h2>
+        <button class="back-link" id="clearPeriodeFilterBtnStaf" style="display:none;padding:0;">× Kembali ke periode berjalan</button>
+      </div>
+      <div id="staffRecordsContainer"><div class="loading"><div class="spinner"></div>Memuat data...</div></div>
+      </div>
+
+      <nav class="bottom-nav" id="navStaff">
+        <button class="nav-btn active" data-page="ringkasan"><svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 20V10M12 20V4M20 20v-7"/></svg><span>Ringkasan</span></button>
+        <button class="nav-btn" data-page="kelola"><svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M4 7h9M17 7h3M4 17h3M11 17h9"/><circle cx="14" cy="7" r="2.2"/><circle cx="8" cy="17" r="2.2"/></svg><span>Kelola</span></button>
+        <button class="nav-btn" data-page="riwayat"><svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M8 6h12M8 12h12M8 18h12"/><circle cx="4" cy="6" r="1"/><circle cx="4" cy="12" r="1"/><circle cx="4" cy="18" r="1"/></svg><span>Riwayat</span></button>
+        <div class="nav-indicator"></div>
+      </nav>
+    </div>
+  </div>
+  <div class="credit-mark">by Vito</div>
+</div>
+
+<div class="modal-overlay" id="confirmModal">
+  <div class="modal-box">
+    <p id="confirmMessage"></p>
+    <div class="field" id="confirmPasswordWrap" style="display:none;">
+      <label for="confirmPasswordInput">Masukkan password akun kamu untuk konfirmasi</label>
+      <input type="password" id="confirmPasswordInput" placeholder="Password">
+    </div>
+    <div id="confirmPasswordError" style="color:var(--clay);font-size:12px;margin:-6px 0 12px;display:none;"></div>
+    <div class="modal-btns">
+      <button class="btn btn-outline" id="confirmCancelBtn">Batal</button>
+      <button class="btn btn-gold" id="confirmOkBtn">Ya, Lanjutkan</button>
+    </div>
+  </div>
+</div>
+
+<div class="modal-overlay" id="settingsModal">
+  <div class="modal-box" style="max-width:380px;">
+    <h2 style="font-family:'Fraunces',serif;font-size:17px;margin:0 0 16px;">Pengaturan</h2>
+
+    <p class="settings-label">Aturan Gaji &amp; Kehadiran</p>
+    <p style="font-size:11.5px;color:var(--muted);margin:-8px 0 12px;">Beda cabang bisa beda aturan — atur sesuai cabang kamu.</p>
+    <div class="field"><label for="setPotonganSakit">Potongan Kalau Sakit (Rp)</label><input type="number" id="setPotonganSakit" min="0" placeholder="100000"></div>
+    <div class="field"><label for="setNominalBackup">Nominal Backup per Periode (Rp)</label><input type="number" id="setNominalBackup" min="0" placeholder="3000000"></div>
+
+    <p class="settings-label" style="margin-top:18px;">Tampilan</p>
+    <div class="field" style="display:flex;align-items:center;justify-content:space-between;">
+      <label style="margin:0;" for="setThemeSwitch">Tema Terang</label>
+      <label class="switch">
+        <input type="checkbox" id="setThemeSwitch">
+        <span class="switch-track"></span>
+      </label>
+    </div>
+    <div class="field" style="margin-top:13px;">
+      <label>Warna Aksen</label>
+      <div class="warna-row">
+        <input type="color" id="setAccentColor" value="#C7A263">
+        <button class="warna-swatch" data-color="#C7A263" style="background:#C7A263;"></button>
+        <button class="warna-swatch" data-color="#4DD4FF" style="background:#4DD4FF;"></button>
+        <button class="warna-swatch" data-color="#FF6B8A" style="background:#FF6B8A;"></button>
+        <button class="warna-swatch" data-color="#6BFF95" style="background:#6BFF95;"></button>
+        <button class="warna-swatch" data-color="#B08CFF" style="background:#B08CFF;"></button>
+      </div>
+    </div>
+
+    <div id="settingsError" style="color:var(--clay);font-size:12.5px;margin:14px 0 0;display:none;"></div>
+    <div class="modal-btns" style="margin-top:20px;">
+      <button class="btn btn-outline" id="settingsCancelBtn">Tutup</button>
+      <button class="btn btn-gold" id="settingsSaveBtn">Simpan</button>
+    </div>
+  </div>
+</div>
+
+<script type="module">
+import { initializeApp, deleteApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, updateProfile, signOut, onAuthStateChanged, sendPasswordResetEmail, EmailAuthProvider, reauthenticateWithCredential } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+import { getFirestore, doc, setDoc, updateDoc, getDoc, addDoc, deleteDoc, collection, onSnapshot, query, orderBy, serverTimestamp, getDocs, writeBatch, increment } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+
+const firebaseConfig = {
+  apiKey: "AIzaSyCyWxEBAnfeXxzw_P-GDqc2QpwpLD6NTCg",
+  authDomain: "kokuocatat.firebaseapp.com",
+  projectId: "kokuocatat",
+  storageBucket: "kokuocatat.firebasestorage.app",
+  messagingSenderId: "607646705190",
+  appId: "1:607646705190:web:5fbe7284873cd5c03668e7",
+  measurementId: "G-R0L3MGBY0C"
+};
+
+// GANTI dengan email yang kamu pakai untuk daftar akun admin. Bisa lebih dari satu.
+const ADMIN_EMAILS = ["muhammad.akbar.titl@gmail.com"];
+
+const app = initializeApp(firebaseConfig);
+const auth = getAuth(app);
+const db = getFirestore(app);
+
+function pesanErrorAuth(code){
+  const map = {
+    'auth/email-already-in-use': 'Email ini sudah terdaftar. Coba masuk saja.',
+    'auth/invalid-email': 'Format email tidak valid.',
+    'auth/weak-password': 'Password terlalu pendek, minimal 6 karakter.',
+    'auth/user-not-found': 'Email belum terdaftar. Daftar dulu.',
+    'auth/wrong-password': 'Password salah.',
+    'auth/invalid-credential': 'Email atau password salah.',
+    'auth/missing-password': 'Password belum diisi.',
+    'auth/too-many-requests': 'Terlalu banyak percobaan. Coba lagi sebentar lagi.'
+  };
+  return map[code] || ('Terjadi kesalahan (' + code + ')');
+}
+
+const JENIS_LABEL = { reflexology:'Reflexology', athletic:'Athletic Massage', seitai:'Seitai', home:'Home Service', penyesuaian:'Penyesuaian Admin' };
+const DURASI_OPTIONS = { reflexology:[60,90,120], athletic:[90,120], seitai:[60,90,120], home:[60,90,120] };
+
+function hitungKomisi(jenis, durasi, jarak){
+  const km = Number(jarak) || 0;
+  if(jenis==='reflexology') return {60:25500,90:38250,120:51000}[durasi];
+  if(jenis==='athletic') return {90:47250,120:63000}[durasi];
+  if(jenis==='seitai') return {60:60000,90:90000,120:120000}[durasi];
+  if(jenis==='home'){
+    if(durasi==60) return 0;
+    if(durasi==90) return 47250 + km*7000;
+    if(durasi==120) return 63000 + km*7000;
+  }
+  return 0;
+}
+function formatRp(n){
+  const sign = n < 0 ? '-' : '';
+  return sign + 'Rp' + Math.round(Math.abs(n)).toLocaleString('id-ID');
+}
+const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+function animateNumber(el, from, to, formatFn){
+  if(prefersReducedMotion || from === to){ el.textContent = formatFn(to); return; }
+  const duration = 500;
+  const start = performance.now();
+  function tick(now){
+    const t = Math.min((now - start) / duration, 1);
+    const eased = 1 - Math.pow(1 - t, 3);
+    el.textContent = formatFn(from + (to - from) * eased);
+    if(t < 1) requestAnimationFrame(tick);
+    else el.textContent = formatFn(to);
+  }
+  requestAnimationFrame(tick);
+}
+function todayISO(){
+  const d = new Date(); const off = d.getTimezoneOffset();
+  return new Date(d.getTime() - off*60000).toISOString().slice(0,10);
+}
+function formatTanggalPanjang(iso){
+  const d = new Date(iso + 'T00:00:00');
+  return d.toLocaleDateString('id-ID', { weekday:'long', day:'numeric', month:'long', year:'numeric' });
+}
+function toISOFromDate(d){
+  const off = d.getTimezoneOffset();
+  return new Date(d.getTime() - off*60000).toISOString().slice(0,10);
+}
+// Periode tutup buku: tiap tanggal 20. Periode berjalan dari tanggal 20 s/d tanggal 19 bulan berikutnya.
+function getPeriodeKey(tanggalISO){
+  const d = new Date(tanggalISO + 'T00:00:00');
+  let y = d.getFullYear(), m = d.getMonth();
+  if(d.getDate() < 20){ m -= 1; if(m < 0){ m = 11; y -= 1; } }
+  return toISOFromDate(new Date(y, m, 20));
+}
+function getPeriodeLabel(periodeKey){
+  const start = new Date(periodeKey + 'T00:00:00');
+  const end = new Date(start.getFullYear(), start.getMonth()+1, 19);
+  const fmt = (d) => d.toLocaleDateString('id-ID', { day:'numeric', month:'long', year:'numeric' });
+  return fmt(start) + ' – ' + fmt(end);
+}
+function getPeriodeEndISO(periodeKey){
+  const start = new Date(periodeKey + 'T00:00:00');
+  return toISOFromDate(new Date(start.getFullYear(), start.getMonth()+1, 19));
+}
+function hariMenujuReset(){
+  const now = new Date();
+  let target = new Date(now.getFullYear(), now.getMonth(), 20);
+  if(now.getDate() >= 20) target = new Date(now.getFullYear(), now.getMonth()+1, 20);
+  return Math.ceil((target - now) / 86400000);
+}
+
+function hitungStatusBackup(recordsList, periodeKey, kehadiranMap, nominalBackup){
+  const totalActual = recordsList.filter(r => getPeriodeKey(r.tanggal) === periodeKey).reduce((s,r) => s + r.komisi, 0);
+  const adaAlfa = Object.keys(kehadiranMap).some(tgl => kehadiranMap[tgl].status === 'alfa' && getPeriodeKey(tgl) === periodeKey);
+  if(adaAlfa) return { total: totalActual, final: totalActual, backupApplied:false, disqualified:true };
+  const final = Math.max(totalActual, nominalBackup || 0);
+  return { total: totalActual, final, backupApplied: final > totalActual, disqualified:false };
+}
+
+function formatRpSingkat(n){
+  const abs = Math.abs(n);
+  const sign = n < 0 ? '-' : '';
+  if(abs >= 1000000) return sign + (abs/1000000).toFixed(abs % 1000000 === 0 ? 0 : 1) + 'jt';
+  if(abs >= 1000) return sign + Math.round(abs/1000) + 'rb';
+  return sign + abs;
+}
+
+function hexToRgb(hex){
+  return { r: parseInt(hex.slice(1,3),16), g: parseInt(hex.slice(3,5),16), b: parseInt(hex.slice(5,7),16) };
+}
+function lightenColor(hex, amt){
+  const { r, g, b } = hexToRgb(hex);
+  const f = (v) => Math.min(255, Math.round(v + (255 - v) * amt));
+  return '#' + [f(r), f(g), f(b)].map(v => v.toString(16).padStart(2,'0')).join('');
+}
+function terapkanTema(theme, color){
+  document.documentElement.setAttribute('data-theme', theme === 'light' ? 'light' : 'dark');
+  if(!color) return;
+  const { r, g, b } = hexToRgb(color);
+  const lum = (0.299*r + 0.587*g + 0.114*b) / 255;
+  document.documentElement.style.setProperty('--gold', color);
+  document.documentElement.style.setProperty('--gold-bright', lightenColor(color, 0.22));
+  document.documentElement.style.setProperty('--gold-dim', `rgba(${r},${g},${b},0.22)`);
+  document.documentElement.style.setProperty('--ink-on-gold', lum > 0.6 ? '#20180E' : '#FBF7EE');
+}
+
+// ---- State ----
+let records = [];
+let currentFilter = 'periode';
+let isAdmin = false;
+let staffList = [];
+let selectedStaff = null;
+let staffRecords = [];
+let currentStaffFilter = 'periode';
+let lastPersonalTotal = 0;
+let lastStaffTotal = 0;
+let kehadiran = {};
+let staffKehadiran = {};
+let pengaturan = { potonganSakit:100000, nominalBackup:3000000, theme:'dark', accentColor:'#C7A263' };
+let calendarViewDate = new Date();
+let kalenderTanggalDipilih = null;
+let unsubKehadiran = null;
+let unsubStaffKehadiran = null;
+let unsubMine = null;
+let unsubStaff = null;
+let unsubStatus = null;
+let blockedMessage = null;
+
+// ---- Elements ----
+const jenisSel = document.getElementById('jenis');
+const durasiSel = document.getElementById('durasi');
+const jarakField = document.getElementById('jarakField');
+const jarakInput = document.getElementById('jarak');
+const tanggalInput = document.getElementById('tanggal');
+const previewAmount = document.getElementById('previewAmount');
+
+function populateDurasi(){
+  const jenis = jenisSel.value;
+  durasiSel.innerHTML = '';
+  DURASI_OPTIONS[jenis].forEach(d => {
+    const opt = document.createElement('option');
+    opt.value = d; opt.textContent = d + ' menit';
+    durasiSel.appendChild(opt);
+  });
+  jarakField.style.display = (jenis === 'home') ? 'block' : 'none';
+  updatePreview();
+}
+function updatePreview(){
+  previewAmount.textContent = formatRp(hitungKomisi(jenisSel.value, Number(durasiSel.value), jarakInput.value));
+}
+jenisSel.addEventListener('change', populateDurasi);
+durasiSel.addEventListener('change', updatePreview);
+jarakInput.addEventListener('input', updatePreview);
+
+// ---- Confirm modal ----
+const confirmModal = document.getElementById('confirmModal');
+const confirmMessage = document.getElementById('confirmMessage');
+const confirmOkBtn = document.getElementById('confirmOkBtn');
+const confirmCancelBtn = document.getElementById('confirmCancelBtn');
+const confirmPasswordWrap = document.getElementById('confirmPasswordWrap');
+const confirmPasswordInput = document.getElementById('confirmPasswordInput');
+const confirmPasswordError = document.getElementById('confirmPasswordError');
+let confirmHandlerRef = null;
+
+function tutupModalKonfirmasi(){
+  confirmModal.classList.remove('show');
+  if(confirmHandlerRef){ confirmOkBtn.removeEventListener('click', confirmHandlerRef); confirmHandlerRef = null; }
+}
+
+function mintaKonfirmasi(pesan, onConfirm, opts){
+  opts = opts || {};
+  tutupModalKonfirmasi();
+  confirmMessage.textContent = pesan;
+  confirmPasswordWrap.style.display = opts.butuhPassword ? 'block' : 'none';
+  confirmPasswordError.style.display = 'none';
+  confirmPasswordInput.value = '';
+  confirmModal.classList.add('show');
+
+  confirmHandlerRef = async () => {
+    if(opts.butuhPassword){
+      const pw = confirmPasswordInput.value;
+      if(!pw){
+        confirmPasswordError.textContent = 'Password harus diisi.';
+        confirmPasswordError.style.display = 'block';
+        return;
+      }
+      try{
+        const cred = EmailAuthProvider.credential(auth.currentUser.email, pw);
+        await reauthenticateWithCredential(auth.currentUser, cred);
+      }catch(e){
+        confirmPasswordError.textContent = 'Password salah. Coba lagi.';
+        confirmPasswordError.style.display = 'block';
+        return;
+      }
+    }
+    confirmModal.classList.remove('show');
+    confirmOkBtn.removeEventListener('click', confirmHandlerRef);
+    confirmHandlerRef = null;
+    await onConfirm();
+  };
+  confirmOkBtn.addEventListener('click', confirmHandlerRef);
+}
+confirmCancelBtn.addEventListener('click', tutupModalKonfirmasi);
+
+// ---- Auth ----
+let authMode = 'login';
+const authErrorEl = document.getElementById('authError');
+const namaFieldWrap = document.getElementById('namaFieldWrap');
+
+function updateAuthUI(){
+  document.getElementById('authSubtitle').textContent = authMode === 'login' ? 'Masuk ke akun kamu' : 'Buat akun baru';
+  namaFieldWrap.style.display = authMode === 'register' ? 'block' : 'none';
+  document.getElementById('authSubmitBtn').textContent = authMode === 'login' ? 'Masuk' : 'Daftar';
+  document.getElementById('authToggleBtn').textContent = authMode === 'login' ? 'Belum punya akun? Daftar di sini' : 'Sudah punya akun? Masuk di sini';
+  document.getElementById('forgotPasswordBtn').style.display = authMode === 'login' ? 'block' : 'none';
+  authErrorEl.style.display = 'none';
+}
+document.getElementById('authToggleBtn').addEventListener('click', () => {
+  authMode = authMode === 'login' ? 'register' : 'login';
+  updateAuthUI();
+});
+
+document.getElementById('authSubmitBtn').addEventListener('click', async () => {
+  const email = document.getElementById('authEmail').value.trim();
+  const password = document.getElementById('authPassword').value;
+  const nama = document.getElementById('authNama').value.trim();
+  authErrorEl.style.display = 'none';
+
+  if(!email || !password){
+    authErrorEl.textContent = 'Isi email dan password dulu.';
+    authErrorEl.style.display = 'block';
+    return;
+  }
+  try{
+    if(authMode === 'register'){
+      const cred = await createUserWithEmailAndPassword(auth, email, password);
+      if(nama) await updateProfile(cred.user, { displayName: nama });
+      await setDoc(doc(db,'users',cred.user.uid), {
+        email, nama: nama || email, aktif:true, updatedAt: serverTimestamp()
+      }, { merge:true });
+      try{
+        await setDoc(doc(db,'public','stats'), { jumlahAkun: increment(1) }, { merge:true });
+      }catch(e){ /* gagal update counter bukan masalah besar, jangan blok pendaftaran */ }
+    } else {
+      await signInWithEmailAndPassword(auth, email, password);
+    }
+  }catch(e){
+    authErrorEl.textContent = pesanErrorAuth(e.code);
+    authErrorEl.style.display = 'block';
+  }
+});
+
+document.getElementById('forgotPasswordBtn').addEventListener('click', async () => {
+  const email = document.getElementById('authEmail').value.trim();
+  authErrorEl.style.display = 'none';
+  if(!email){
+    authErrorEl.textContent = 'Isi email kamu dulu di kolom Email di atas, baru klik "Lupa password?" lagi.';
+    authErrorEl.style.display = 'block';
+    return;
+  }
+  try{
+    await sendPasswordResetEmail(auth, email);
+    authErrorEl.style.color = 'var(--jade)';
+    authErrorEl.textContent = 'Email reset password sudah dikirim ke ' + email + '. Cek inbox (atau folder spam).';
+    authErrorEl.style.display = 'block';
+  }catch(e){
+    authErrorEl.style.color = 'var(--clay)';
+    authErrorEl.textContent = pesanErrorAuth(e.code);
+    authErrorEl.style.display = 'block';
+  }
+});
+
+document.getElementById('logoutBtn').addEventListener('click', () => signOut(auth));
+document.getElementById('blockedBackBtn').addEventListener('click', () => {
+  document.getElementById('blockedScreen').style.display = 'none';
+  document.getElementById('authScreen').style.display = 'flex';
+});
+
+function subscribeMyStatus(uid){
+  if(unsubStatus) unsubStatus();
+  unsubStatus = onSnapshot(doc(db,'users',uid), (snap) => {
+    if(snap.exists() && snap.data().aktif === false && auth.currentUser){
+      blockedMessage = 'Akun kamu baru saja dinonaktifkan oleh admin. Silakan hubungi admin.';
+      signOut(auth);
+    }
+  });
+}
+
+onAuthStateChanged(auth, async (user) => {
+  document.getElementById('initialLoadingScreen').style.display = 'none';
+  if(user){
+    try{
+      await setDoc(doc(db,'users',user.uid), {
+        email: user.email, updatedAt: serverTimestamp()
+      }, { merge:true });
+    }catch(e){
+      alert('Berhasil masuk, tapi gagal menyimpan profil ke database.\n\nPesan error: ' + e.message + '\n\nCek di Firebase Console: apakah Firestore Database sudah dibuat, dan apakah Rules sudah dipasang?');
+    }
+
+    let aktif = true;
+    try{
+      const snap = await getDoc(doc(db,'users',user.uid));
+      if(snap.exists()){
+        const d = snap.data();
+        if(d.aktif === false) aktif = false;
+        pengaturan.potonganSakit = d.potonganSakit ?? 100000;
+        pengaturan.nominalBackup = d.nominalBackup ?? 3000000;
+        pengaturan.theme = d.theme || 'dark';
+        pengaturan.accentColor = d.accentColor || '#C7A263';
+      }
+    }catch(e){ /* kalau gagal cek, anggap aktif supaya tidak salah blokir karena koneksi */ }
+    terapkanTema(pengaturan.theme, pengaturan.accentColor);
+
+    if(!aktif){
+      blockedMessage = 'Maaf, akun kamu tidak bisa digunakan. Silakan hubungi admin.';
+      await signOut(auth);
+      return;
+    }
+
+    document.getElementById('blockedScreen').style.display = 'none';
+    document.getElementById('authScreen').style.display = 'none';
+    document.getElementById('appScreen').style.display = 'block';
+    document.getElementById('avatarInitial').textContent = (user.displayName || user.email || '?').charAt(0).toUpperCase();
+
+    isAdmin = ADMIN_EMAILS.includes(user.email);
+    history.replaceState({ screen:'personal' }, '', location.pathname + location.search);
+    renderInnerScreen('personal');
+
+    subscribeMyRecords(user.uid);
+    subscribeMyStatus(user.uid);
+    subscribeKehadiran(user.uid);
+  } else {
+    document.getElementById('appScreen').style.display = 'none';
+    document.getElementById('authEmail').value = '';
+    document.getElementById('authPassword').value = '';
+    if(unsubMine) unsubMine();
+    if(unsubStaff) unsubStaff();
+    if(unsubStatus) unsubStatus();
+    if(unsubKehadiran) unsubKehadiran();
+    if(unsubStaffKehadiran) unsubStaffKehadiran();
+    terapkanTema('dark', '#C7A263');
+
+    if(blockedMessage){
+      document.getElementById('authScreen').style.display = 'none';
+      document.getElementById('blockedScreen').style.display = 'flex';
+      document.getElementById('blockedText').textContent = blockedMessage;
+      blockedMessage = null;
+    } else {
+      document.getElementById('blockedScreen').style.display = 'none';
+      document.getElementById('authScreen').style.display = 'flex';
+    }
+  }
+});
+
+// ---- Personal records (realtime) ----
+function subscribeMyRecords(uid){
+  if(unsubMine) unsubMine();
+  const q = query(collection(db,'users',uid,'records'), orderBy('tanggal','desc'));
+  unsubMine = onSnapshot(q, snap => {
+    records = snap.docs.map(d => ({ id:d.id, ...d.data() }));
+    renderPersonal();
+    if(document.querySelector('.page-view[data-page="kalender"]')?.classList.contains('active')){
+      renderKalender();
+      if(kalenderTanggalDipilih) bukaDetailTanggal(kalenderTanggalDipilih);
+    }
+  }, () => { document.getElementById('listContainer').innerHTML = '<div class="empty-state">Gagal memuat data.</div>'; });
+}
+
+// ---- Kehadiran (realtime) ----
+function subscribeKehadiran(uid){
+  if(unsubKehadiran) unsubKehadiran();
+  unsubKehadiran = onSnapshot(collection(db,'users',uid,'kehadiran'), snap => {
+    kehadiran = {};
+    snap.docs.forEach(d => { kehadiran[d.id] = d.data(); });
+    updateKehadiranTodayUI();
+    renderPersonal();
+    if(document.querySelector('.page-view[data-page="kalender"]')?.classList.contains('active')) renderKalender();
+  });
+}
+
+function updateKehadiranTodayUI(){
+  const status = kehadiran[todayISO()]?.status || null;
+  document.querySelectorAll('#kehMasukBtn, #kehSakitBtn, #kehAlfaBtn').forEach(b => b.classList.toggle('active', b.dataset.status === status));
+  const hint = document.getElementById('kehStatusHint');
+  const label = { masuk:'Masuk', sakit:'Sakit (dipotong ' + formatRp(pengaturan.potonganSakit) + ')', alfa:'Alfa (backup periode ini tidak berlaku)' };
+  hint.textContent = status ? 'Hari ini: ' + label[status] : 'Belum diisi untuk hari ini.';
+}
+
+async function setKehadiranTanggal(tanggalISO, status){
+  const uid = auth.currentUser.uid;
+  try{
+    await setDoc(doc(db,'users',uid,'kehadiran',tanggalISO), { status, updatedAt: serverTimestamp() }, { merge:true });
+    const recSakitId = 'auto_sakit_' + tanggalISO;
+    if(status === 'sakit'){
+      await setDoc(doc(db,'users',uid,'records',recSakitId), {
+        tanggal: tanggalISO, jenis:'penyesuaian', durasi:null, jarak:null,
+        komisi: -(Number(pengaturan.potonganSakit) || 0), tipe:'penyesuaian',
+        catatan:'Potongan sakit', otomatis:true, createdAt: serverTimestamp()
+      }, { merge:true });
+    } else {
+      try{ await deleteDoc(doc(db,'users',uid,'records',recSakitId)); }catch(e){}
+    }
+  }catch(e){ alert('Gagal menyimpan kehadiran: ' + e.message); }
+}
+
+document.querySelectorAll('#kehMasukBtn, #kehSakitBtn, #kehAlfaBtn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    const status = btn.dataset.status;
+    const label = { masuk:'Masuk', sakit:'Sakit', alfa:'Alfa' };
+    let pesan = `Tandai hari ini sebagai "${label[status]}"?`;
+    if(status === 'sakit') pesan += `\n\nAkan otomatis dicatat potongan ${formatRp(pengaturan.potonganSakit)}.`;
+    if(status === 'alfa') pesan += '\n\nBackup gaji periode berjalan jadi TIDAK berlaku kalau ada Alfa.';
+    mintaKonfirmasi(pesan, () => setKehadiranTanggal(todayISO(), status));
+  });
+});
+
+document.getElementById('resetPeriodeBtn').addEventListener('click', () => {
+  const uid = auth.currentUser.uid;
+  const periodeSekarang = getPeriodeKey(todayISO());
+  const target = records.filter(r => getPeriodeKey(r.tanggal) === periodeSekarang);
+  if(target.length === 0){
+    alert('Tidak ada catatan di periode berjalan untuk direset.');
+    return;
+  }
+  const totalTarget = target.reduce((s,r) => s + r.komisi, 0);
+  mintaKonfirmasi(
+    `PERINGATAN: ini akan menghapus permanen ${target.length} catatan di periode berjalan (total ${formatRp(totalTarget)}). Tidak bisa dibatalkan. Lanjutkan?`,
+    async () => {
+      try{
+        const batch = writeBatch(db);
+        target.forEach(r => batch.delete(doc(db,'users',uid,'records',r.id)));
+        await batch.commit();
+      }catch(e){ alert('Gagal reset: ' + e.message); }
+    },
+    { butuhPassword:true }
+  );
+});
+
+document.getElementById('addBtn').addEventListener('click', () => {
+  const uid = auth.currentUser.uid;
+  const tanggal = tanggalInput.value || todayISO();
+  const jenis = jenisSel.value;
+  const durasi = Number(durasiSel.value);
+  const jarak = jenis === 'home' ? (Number(jarakInput.value) || 0) : null;
+  const komisi = hitungKomisi(jenis, durasi, jarak);
+  const subInfo = jenis === 'home' && jarak != null ? `${durasi} menit · ${jarak} km` : `${durasi} menit`;
+
+  const targetPeriode = getPeriodeKey(tanggal);
+  const periodeSekarang = getPeriodeKey(todayISO());
+  const sedangLihatPeriodeLain = !['today','periode','all'].includes(currentFilter) && currentFilter !== targetPeriode;
+
+  let pesan = `Tambah tamu ${JENIS_LABEL[jenis]} (${subInfo}) tanggal ${formatTanggalPanjang(tanggal)} dengan komisi ${formatRp(komisi)}?`;
+  if(sedangLihatPeriodeLain){
+    pesan += `\n\n⚠️ Catatan ini akan masuk ke periode ${getPeriodeLabel(targetPeriode)}, BUKAN periode ${getPeriodeLabel(currentFilter)} yang sedang kamu lihat sekarang.`;
+  } else if(targetPeriode !== periodeSekarang){
+    pesan += `\n\n⚠️ Tanggal ini termasuk periode ${getPeriodeLabel(targetPeriode)}, bukan periode berjalan saat ini.`;
+  }
+
+  mintaKonfirmasi(pesan, async () => {
+    try{
+      await addDoc(collection(db,'users',uid,'records'), {
+        tanggal, jenis, durasi, jarak, komisi, tipe:'layanan', createdAt: serverTimestamp()
+      });
+      jarakInput.value = ''; updatePreview();
+    }catch(e){ alert('Gagal menyimpan: ' + e.message); }
+  });
+});
+
+async function hapusRecordSaya(id){
+  mintaKonfirmasi('Yakin ingin menghapus catatan ini?', async () => {
+    try{ await deleteDoc(doc(db,'users',auth.currentUser.uid,'records',id)); }
+    catch(e){ alert('Gagal menghapus: ' + e.message); }
+  });
+}
+window.hapusRecordSaya = hapusRecordSaya;
+
+document.querySelectorAll('.tab-btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    if(!['today','periode','all'].includes(currentFilter)) tanggalInput.value = todayISO();
+    currentFilter = btn.dataset.filter;
+    document.getElementById('clearPeriodeFilterBtn').style.display = 'none';
+    document.getElementById('listHeaderTitle').textContent = 'Riwayat Saya';
+    renderPersonal();
+  });
+});
+
+document.getElementById('clearPeriodeFilterBtn').addEventListener('click', () => {
+  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+  document.querySelector('.tab-btn[data-filter="periode"]').classList.add('active');
+  currentFilter = 'periode';
+  tanggalInput.value = todayISO();
+  document.getElementById('clearPeriodeFilterBtn').style.display = 'none';
+  document.getElementById('listHeaderTitle').textContent = 'Riwayat Saya';
+  renderPersonal();
+});
+
+function lihatPeriodeLama(periodeKey){
+  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+  currentFilter = periodeKey;
+  tanggalInput.value = getPeriodeEndISO(periodeKey);
+  document.getElementById('clearPeriodeFilterBtn').style.display = 'inline-block';
+  document.getElementById('listHeaderTitle').textContent = getPeriodeLabel(periodeKey);
+  renderPersonal();
+  document.getElementById('listContainer').scrollIntoView({ behavior:'smooth', block:'start' });
+}
+
+function renderList(container, list, deleteFn){
+  if(list.length === 0){
+    container.innerHTML = '<div class="empty-state">Belum ada catatan.</div>';
+    return;
+  }
+  const sorted = list.slice().sort((a,b) => {
+    if(a.tanggal !== b.tanggal) return b.tanggal.localeCompare(a.tanggal);
+    return (b.createdAt?.seconds||0) - (a.createdAt?.seconds||0);
+  });
+  let html = ''; let lastDate = null;
+  sorted.forEach(r => {
+    if(r.tanggal !== lastDate){
+      html += `<div class="date-group-title">${formatTanggalPanjang(r.tanggal)}</div>`;
+      lastDate = r.tanggal;
+    }
+    const isAdj = r.tipe === 'penyesuaian';
+    const sub = isAdj ? (r.catatan || 'Penyesuaian oleh admin') : (r.jenis === 'home' && r.jarak != null ? `${r.durasi} menit · ${r.jarak} km` : `${r.durasi} menit`);
+    html += `
+      <div class="entry">
+        <div class="entry-info">
+          <div class="entry-title ${isAdj?'adj':''}">${JENIS_LABEL[r.jenis]}</div>
+          <div class="entry-sub">${sub}</div>
+        </div>
+        <div class="entry-amount ${r.komisi<0?'neg':''}">${formatRp(r.komisi)}</div>
+        <button class="del-btn" data-id="${r.id}" aria-label="Hapus">✕</button>
+      </div>`;
+  });
+  container.innerHTML = html;
+  container.querySelectorAll('.del-btn').forEach(btn => {
+    btn.addEventListener('click', () => deleteFn(btn.dataset.id));
+  });
+}
+
+function renderPersonal(){
+  const today = todayISO();
+  const periodeSekarang = getPeriodeKey(today);
+  let filtered;
+  if(currentFilter === 'today') filtered = records.filter(r => r.tanggal === today);
+  else if(currentFilter === 'periode') filtered = records.filter(r => getPeriodeKey(r.tanggal) === periodeSekarang);
+  else if(currentFilter === 'all') filtered = records.slice();
+  else filtered = records.filter(r => getPeriodeKey(r.tanggal) === currentFilter);
+
+  const total = filtered.reduce((s,r) => s + r.komisi, 0);
+  const isPeriodeView = currentFilter !== 'today' && currentFilter !== 'all';
+  let displayTotal = total;
+
+  if(isPeriodeView){
+    const pKey = currentFilter === 'periode' ? periodeSekarang : currentFilter;
+    const bs = hitungStatusBackup(records, pKey, kehadiran, pengaturan.nominalBackup);
+    displayTotal = bs.final;
+    document.getElementById('backupKomisiAsli').textContent = formatRp(bs.total);
+    const nominalEl = document.getElementById('backupNominalTampil');
+    const rowNominal = document.getElementById('backupRowNominal');
+    if(bs.disqualified){
+      nominalEl.textContent = 'Tidak berlaku (ada Alfa)';
+      rowNominal.classList.add('disqualified');
+    } else {
+      nominalEl.textContent = formatRp(pengaturan.nominalBackup);
+      rowNominal.classList.remove('disqualified');
+    }
+    document.getElementById('backupDetail').style.display = 'block';
+  } else {
+    document.getElementById('backupDetail').style.display = 'none';
+  }
+
+  animateNumber(document.getElementById('balanceAmount'), lastPersonalTotal, displayTotal, formatRp);
+  lastPersonalTotal = displayTotal;
+  document.getElementById('guestCount').textContent = filtered.length;
+
+  if(currentFilter === 'periode'){
+    document.getElementById('balanceLabel').textContent = 'Saldo Periode Berjalan';
+    document.getElementById('balanceSubLabel').textContent = 'Reset dalam ' + hariMenujuReset() + ' hari (tgl 20)';
+  } else {
+    document.getElementById('balanceLabel').textContent = 'Total Saldo';
+    document.getElementById('balanceSubLabel').textContent = 'Jumlah Catatan';
+  }
+
+  renderList(document.getElementById('listContainer'), filtered, hapusRecordSaya);
+  renderRiwayatBulanan(periodeSekarang);
+}
+
+function renderRiwayatBulanan(periodeSekarang){
+  const totals = {};
+  records.forEach(r => {
+    const key = getPeriodeKey(r.tanggal);
+    if(key === periodeSekarang) return;
+    totals[key] = (totals[key] || 0) + r.komisi;
+  });
+  const keys = Object.keys(totals).sort().reverse();
+  const card = document.getElementById('riwayatBulananCard');
+  if(keys.length === 0){ card.style.display = 'none'; return; }
+  card.style.display = 'block';
+  document.getElementById('riwayatBulananContainer').innerHTML = keys.map(key => {
+    const bs = hitungStatusBackup(records, key, kehadiran, pengaturan.nominalBackup);
+    const badge = bs.disqualified ? '<span class="periode-badge alfa">Alfa</span>' : (bs.backupApplied ? '<span class="periode-badge backup">Di-backup</span>' : '');
+    return `
+    <div class="periode-item" data-key="${key}">
+      <div class="periode-item-label">${getPeriodeLabel(key)}${badge}</div>
+      <div class="periode-item-amount">${formatRp(bs.final)}</div>
+    </div>`;
+  }).join('');
+  document.querySelectorAll('#riwayatBulananContainer .periode-item').forEach(el => {
+    el.addEventListener('click', () => lihatPeriodeLama(el.dataset.key));
+  });
+}
+
+// ---- Kalender ----
+function renderKalender(){
+  const y = calendarViewDate.getFullYear();
+  const m = calendarViewDate.getMonth();
+  const firstDay = new Date(y, m, 1);
+  const startOffset = firstDay.getDay();
+  const daysInMonth = new Date(y, m+1, 0).getDate();
+  document.getElementById('kalenderMonthLabel').textContent = firstDay.toLocaleDateString('id-ID', { month:'long', year:'numeric' });
+
+  const komisiPerTanggal = {};
+  records.forEach(r => { komisiPerTanggal[r.tanggal] = (komisiPerTanggal[r.tanggal] || 0) + r.komisi; });
+
+  let html = '';
+  for(let i = 0; i < startOffset; i++) html += '<div class="kal-cell kal-empty"></div>';
+  for(let d = 1; d <= daysInMonth; d++){
+    const iso = toISOFromDate(new Date(y, m, d));
+    const status = kehadiran[iso]?.status || '';
+    const komisi = komisiPerTanggal[iso] || 0;
+    const isToday = iso === todayISO();
+    html += `<div class="kal-cell ${status ? 'kal-'+status : ''} ${isToday ? 'kal-today' : ''}" data-date="${iso}">
+      <span class="kal-day">${d}</span>
+      ${komisi ? `<span class="kal-amt">${formatRpSingkat(komisi)}</span>` : ''}
+    </div>`;
+  }
+  document.getElementById('kalenderGrid').innerHTML = html;
+  document.querySelectorAll('#kalenderGrid .kal-cell[data-date]').forEach(el => {
+    el.addEventListener('click', () => bukaDetailTanggal(el.dataset.date));
+  });
+}
+
+function bukaDetailTanggal(iso){
+  kalenderTanggalDipilih = iso;
+  const card = document.getElementById('kalenderDetailCard');
+  card.style.display = 'block';
+  document.getElementById('kalenderDetailTitle').textContent = formatTanggalPanjang(iso);
+  const status = kehadiran[iso]?.status || null;
+  card.querySelectorAll('.keh-btn').forEach(b => b.classList.toggle('active', b.dataset.status === status));
+  const catatanTanggal = records.filter(r => r.tanggal === iso);
+  renderList(document.getElementById('kalenderDetailRecords'), catatanTanggal, hapusRecordSaya);
+  card.scrollIntoView({ behavior:'smooth', block:'nearest' });
+}
+
+document.getElementById('kalenderDetailCard').querySelectorAll('.keh-btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    if(!kalenderTanggalDipilih) return;
+    const status = btn.dataset.status;
+    const label = { masuk:'Masuk', izin:'Izin', sakit:'Sakit', alfa:'Alfa' };
+    let pesan = `Tandai ${formatTanggalPanjang(kalenderTanggalDipilih)} sebagai "${label[status]}"?`;
+    if(status === 'sakit') pesan += `\n\nAkan otomatis dicatat potongan ${formatRp(pengaturan.potonganSakit)}.`;
+    if(status === 'alfa') pesan += '\n\nBackup gaji periode ini jadi TIDAK berlaku kalau ada Alfa.';
+    mintaKonfirmasi(pesan, async () => {
+      await setKehadiranTanggal(kalenderTanggalDipilih, status);
+      bukaDetailTanggal(kalenderTanggalDipilih);
+    });
+  });
+});
+
+document.getElementById('kalPrevBtn').addEventListener('click', () => {
+  calendarViewDate = new Date(calendarViewDate.getFullYear(), calendarViewDate.getMonth() - 1, 1);
+  document.getElementById('kalenderDetailCard').style.display = 'none';
+  renderKalender();
+});
+document.getElementById('kalNextBtn').addEventListener('click', () => {
+  calendarViewDate = new Date(calendarViewDate.getFullYear(), calendarViewDate.getMonth() + 1, 1);
+  document.getElementById('kalenderDetailCard').style.display = 'none';
+  renderKalender();
+});
+
+// ---- Admin (navigasi pakai History API, supaya tombol back HP berfungsi) ----
+function renderInnerScreen(screen, uid){
+  document.getElementById('personalSection').style.display = screen === 'personal' ? 'block' : 'none';
+  document.getElementById('adminSection').style.display = (screen === 'admin-list' || screen === 'admin-detail') ? 'block' : 'none';
+  document.getElementById('staffListView').style.display = screen === 'admin-list' ? 'block' : 'none';
+  document.getElementById('staffDetailView').style.display = screen === 'admin-detail' ? 'block' : 'none';
+  document.getElementById('adminToggleBtn').style.display = (screen === 'personal' && isAdmin) ? 'block' : 'none';
+
+  if(screen === 'admin-list'){
+    loadStaffList();
+    if(unsubStaff) unsubStaff();
+  }
+  if(screen === 'admin-detail' && uid){
+    if(staffList.length === 0){
+      loadStaffList().then(() => pilihStaf(uid, false));
+    } else {
+      pilihStaf(uid, false);
+    }
+  }
+  if(screen === 'personal' && unsubStaff) unsubStaff();
+}
+
+window.addEventListener('popstate', (e) => {
+  if(document.getElementById('appScreen').style.display !== 'block') return;
+  const state = e.state || { screen:'personal' };
+  renderInnerScreen(state.screen, state.uid);
+});
+
+document.getElementById('adminToggleBtn').addEventListener('click', () => {
+  history.pushState({ screen:'admin-list' }, '', location.pathname + location.search);
+  renderInnerScreen('admin-list');
+});
+document.getElementById('adminBackBtn').addEventListener('click', () => history.back());
+document.getElementById('staffBackBtn').addEventListener('click', () => history.back());
+
+async function loadStaffList(){
+  const container = document.getElementById('staffListContainer');
+  try{
+    const snap = await getDocs(collection(db,'users'));
+    staffList = snap.docs.map(d => ({ uid:d.id, ...d.data() }));
+    const tampil = staffList.filter(s => !s.dihapus);
+    if(tampil.length === 0){
+      container.innerHTML = '<div class="empty-state">Belum ada staf terdaftar.</div>';
+      return;
+    }
+    container.innerHTML = tampil.map(s => {
+      const aktif = s.aktif !== false;
+      return `
+      <div class="staff-item ${aktif?'':'nonaktif'}" data-uid="${s.uid}">
+        <div>
+          <div class="staff-name">${s.nama || s.email}</div>
+          <div class="staff-email">${s.email}</div>
+        </div>
+        <span class="status-tag ${aktif?'aktif':'nonaktif'}">${aktif?'Aktif':'Nonaktif'}</span>
+      </div>`;
+    }).join('');
+    container.querySelectorAll('.staff-item').forEach(el => {
+      el.addEventListener('click', () => {
+        history.pushState({ screen:'admin-detail', uid: el.dataset.uid }, '', location.pathname + location.search);
+        pilihStaf(el.dataset.uid, false);
+      });
+    });
+  }catch(e){
+    container.innerHTML = '<div class="empty-state">Gagal memuat daftar staf.</div>';
+  }
+}
+
+document.getElementById('tambahStafToggleBtn').addEventListener('click', () => {
+  const card = document.getElementById('tambahStafCard');
+  card.style.display = card.style.display === 'none' ? 'block' : 'none';
+});
+document.getElementById('tambahStafCancelBtn').addEventListener('click', () => {
+  document.getElementById('tambahStafCard').style.display = 'none';
+  document.getElementById('tambahStafNama').value = '';
+  document.getElementById('tambahStafEmail').value = '';
+  document.getElementById('tambahStafPassword').value = '';
+  document.getElementById('tambahStafError').style.display = 'none';
+});
+document.getElementById('tambahStafSubmitBtn').addEventListener('click', async () => {
+  const nama = document.getElementById('tambahStafNama').value.trim();
+  const email = document.getElementById('tambahStafEmail').value.trim();
+  const password = document.getElementById('tambahStafPassword').value;
+  const errEl = document.getElementById('tambahStafError');
+  errEl.style.display = 'none';
+  if(!nama || !email || !password){
+    errEl.textContent = 'Isi nama, email, dan password dulu.';
+    errEl.style.display = 'block';
+    return;
+  }
+  if(password.length < 6){
+    errEl.textContent = 'Password minimal 6 karakter.';
+    errEl.style.display = 'block';
+    return;
+  }
+  const btn = document.getElementById('tambahStafSubmitBtn');
+  btn.disabled = true; btn.textContent = 'Membuat akun...';
+  const secondaryApp = initializeApp(firebaseConfig, 'Secondary_' + Date.now());
+  const secondaryAuth = getAuth(secondaryApp);
+  try{
+    const cred = await createUserWithEmailAndPassword(secondaryAuth, email, password);
+    await updateProfile(cred.user, { displayName: nama });
+    await setDoc(doc(db,'users',cred.user.uid), {
+      email, nama, aktif:true, dibuatOlehAdmin:true, updatedAt: serverTimestamp()
+    }, { merge:true });
+    try{ await setDoc(doc(db,'public','stats'), { jumlahAkun: increment(1) }, { merge:true }); }catch(e){}
+    await signOut(secondaryAuth);
+    await deleteApp(secondaryApp);
+    document.getElementById('tambahStafNama').value = '';
+    document.getElementById('tambahStafEmail').value = '';
+    document.getElementById('tambahStafPassword').value = '';
+    document.getElementById('tambahStafCard').style.display = 'none';
+    loadStaffList();
+  }catch(e){
+    try{ await deleteApp(secondaryApp); }catch(_e){}
+    errEl.textContent = pesanErrorAuth(e.code);
+    errEl.style.display = 'block';
+  }
+  btn.disabled = false; btn.textContent = 'Buat Akun';
+});
+
+function pilihStaf(uid, pushHistory){
+  selectedStaff = staffList.find(s => s.uid === uid);
+  if(!selectedStaff) return;
+  document.getElementById('staffListView').style.display = 'none';
+  document.getElementById('staffDetailView').style.display = 'block';
+  document.getElementById('staffNameLabel').textContent = 'Saldo — ' + (selectedStaff.nama || selectedStaff.email);
+  document.getElementById('staffAktifSwitch').checked = selectedStaff.aktif !== false;
+  document.getElementById('editStafNama').value = selectedStaff.nama || '';
+  currentStaffFilter = 'periode';
+  lastStaffTotal = 0;
+  document.querySelectorAll('.staff-tab-btn').forEach(b => b.classList.remove('active'));
+  document.querySelector('.staff-tab-btn[data-filter="periode"]').classList.add('active');
+  document.getElementById('clearPeriodeFilterBtnStaf').style.display = 'none';
+  document.getElementById('staffListHeaderTitle').textContent = 'Riwayat Staf';
+  gantiHalamanStaf('ringkasan');
+  if(pushHistory){
+    history.pushState({ screen:'admin-detail', uid }, '', location.pathname + location.search);
+  }
+
+  if(unsubStaff) unsubStaff();
+  const q = query(collection(db,'users',uid,'records'), orderBy('tanggal','desc'));
+  unsubStaff = onSnapshot(q, snap => {
+    staffRecords = snap.docs.map(d => ({ id:d.id, ...d.data() }));
+    renderStaffDetail();
+  });
+
+  if(unsubStaffKehadiran) unsubStaffKehadiran();
+  unsubStaffKehadiran = onSnapshot(collection(db,'users',uid,'kehadiran'), snap => {
+    staffKehadiran = {};
+    snap.docs.forEach(d => { staffKehadiran[d.id] = d.data(); });
+    renderStaffDetail();
+  });
+}
+
+document.getElementById('staffAktifSwitch').addEventListener('click', (e) => {
+  e.preventDefault();
+  const mauAktif = !(selectedStaff.aktif !== false);
+  const nama = selectedStaff.nama || selectedStaff.email;
+  const pesan = mauAktif
+    ? `Yakin ingin mengaktifkan kembali akun ${nama}?`
+    : `Yakin ingin menonaktifkan akun ${nama}? Orang ini tidak akan bisa login sampai kamu aktifkan lagi.`;
+  mintaKonfirmasi(pesan, async () => {
+    try{
+      await updateDoc(doc(db,'users',selectedStaff.uid), { aktif: mauAktif });
+      selectedStaff.aktif = mauAktif;
+      document.getElementById('staffAktifSwitch').checked = mauAktif;
+    }catch(err){ alert('Gagal mengubah status akun: ' + err.message); }
+  });
+});
+
+document.getElementById('resetPasswordBtn').addEventListener('click', () => {
+  const nama = selectedStaff.nama || selectedStaff.email;
+  mintaKonfirmasi(`Kirim email reset password ke ${selectedStaff.email}? Orang ini akan menerima link untuk membuat password baru.`, async () => {
+    try{
+      await sendPasswordResetEmail(auth, selectedStaff.email);
+      alert('Email reset password sudah dikirim ke ' + selectedStaff.email);
+    }catch(err){ alert('Gagal mengirim email reset: ' + err.message); }
+  });
+});
+
+document.getElementById('editStafNamaBtn').addEventListener('click', () => {
+  const namaBaru = document.getElementById('editStafNama').value.trim();
+  if(!namaBaru){ alert('Nama tidak boleh kosong.'); return; }
+  mintaKonfirmasi(`Ganti nama staf ini jadi "${namaBaru}"?`, async () => {
+    try{
+      await updateDoc(doc(db,'users',selectedStaff.uid), { nama: namaBaru });
+      selectedStaff.nama = namaBaru;
+      document.getElementById('staffNameLabel').textContent = 'Saldo — ' + namaBaru;
+    }catch(e){ alert('Gagal menyimpan nama: ' + e.message); }
+  });
+});
+
+document.getElementById('hapusStafBtn').addEventListener('click', () => {
+  const nama = selectedStaff.nama || selectedStaff.email;
+  mintaKonfirmasi(
+    `PERINGATAN: ini akan menghapus akun ${nama} dari daftar staf dan memblokir login-nya secara permanen. Riwayat catatannya tetap tersimpan (ikut di backup) tapi tidak akan tampil lagi di sini. Tidak bisa dibatalkan sendiri. Lanjutkan?`,
+    async () => {
+      try{
+        await updateDoc(doc(db,'users',selectedStaff.uid), { aktif:false, dihapus:true, dihapusAt: serverTimestamp() });
+        history.back();
+      }catch(e){ alert('Gagal menghapus akun: ' + e.message); }
+    },
+    { butuhPassword:true }
+  );
+});
+
+function renderStaffDetail(){
+  const today = todayISO();
+  const periodeSekarang = getPeriodeKey(today);
+  let filtered;
+  if(currentStaffFilter === 'today') filtered = staffRecords.filter(r => r.tanggal === today);
+  else if(currentStaffFilter === 'periode') filtered = staffRecords.filter(r => getPeriodeKey(r.tanggal) === periodeSekarang);
+  else if(currentStaffFilter === 'all') filtered = staffRecords.slice();
+  else filtered = staffRecords.filter(r => getPeriodeKey(r.tanggal) === currentStaffFilter);
+
+  const total = filtered.reduce((s,r) => s + r.komisi, 0);
+  const isPeriodeView = currentStaffFilter !== 'today' && currentStaffFilter !== 'all';
+  let displayTotal = total;
+  const nominalBackupStaf = selectedStaff.nominalBackup ?? 3000000;
+
+  if(isPeriodeView){
+    const pKey = currentStaffFilter === 'periode' ? periodeSekarang : currentStaffFilter;
+    const bs = hitungStatusBackup(staffRecords, pKey, staffKehadiran, nominalBackupStaf);
+    displayTotal = bs.final;
+    document.getElementById('staffBackupKomisiAsli').textContent = formatRp(bs.total);
+    const nominalEl = document.getElementById('staffBackupNominalTampil');
+    const rowNominal = document.getElementById('staffBackupRowNominal');
+    if(bs.disqualified){
+      nominalEl.textContent = 'Tidak berlaku (ada Alfa)';
+      rowNominal.classList.add('disqualified');
+    } else {
+      nominalEl.textContent = formatRp(nominalBackupStaf);
+      rowNominal.classList.remove('disqualified');
+    }
+    document.getElementById('staffBackupDetail').style.display = 'block';
+  } else {
+    document.getElementById('staffBackupDetail').style.display = 'none';
+  }
+
+  animateNumber(document.getElementById('staffBalanceAmount'), lastStaffTotal, displayTotal, formatRp);
+  lastStaffTotal = displayTotal;
+  document.getElementById('staffCount').textContent = filtered.length;
+  document.getElementById('staffBalanceSubLabel').textContent = currentStaffFilter === 'periode'
+    ? 'Reset dalam ' + hariMenujuReset() + ' hari (tgl 20)'
+    : 'Jumlah Catatan';
+
+  renderList(document.getElementById('staffRecordsContainer'), filtered, hapusRecordStaf);
+  renderStaffRiwayatBulanan(periodeSekarang);
+}
+
+function renderStaffRiwayatBulanan(periodeSekarang){
+  const totals = {};
+  staffRecords.forEach(r => {
+    const key = getPeriodeKey(r.tanggal);
+    if(key === periodeSekarang) return;
+    totals[key] = (totals[key] || 0) + r.komisi;
+  });
+  const keys = Object.keys(totals).sort().reverse();
+  const card = document.getElementById('staffRiwayatBulananCard');
+  if(keys.length === 0){ card.style.display = 'none'; return; }
+  card.style.display = 'block';
+  const nominalBackupStaf = selectedStaff.nominalBackup ?? 3000000;
+  document.getElementById('staffRiwayatBulananContainer').innerHTML = keys.map(key => {
+    const bs = hitungStatusBackup(staffRecords, key, staffKehadiran, nominalBackupStaf);
+    const badge = bs.disqualified ? '<span class="periode-badge alfa">Alfa</span>' : (bs.backupApplied ? '<span class="periode-badge backup">Di-backup</span>' : '');
+    return `
+    <div class="periode-item" data-key="${key}">
+      <div class="periode-item-label">${getPeriodeLabel(key)}${badge}</div>
+      <div class="periode-item-amount">${formatRp(bs.final)}</div>
+    </div>`;
+  }).join('');
+  document.querySelectorAll('#staffRiwayatBulananContainer .periode-item').forEach(el => {
+    el.addEventListener('click', () => lihatPeriodeLamaStaf(el.dataset.key));
+  });
+}
+
+function lihatPeriodeLamaStaf(periodeKey){
+  document.querySelectorAll('.staff-tab-btn').forEach(b => b.classList.remove('active'));
+  currentStaffFilter = periodeKey;
+  document.getElementById('clearPeriodeFilterBtnStaf').style.display = 'inline-block';
+  document.getElementById('staffListHeaderTitle').textContent = getPeriodeLabel(periodeKey);
+  renderStaffDetail();
+  document.getElementById('staffRecordsContainer').scrollIntoView({ behavior:'smooth', block:'start' });
+}
+
+document.querySelectorAll('.staff-tab-btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    document.querySelectorAll('.staff-tab-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    currentStaffFilter = btn.dataset.filter;
+    document.getElementById('clearPeriodeFilterBtnStaf').style.display = 'none';
+    document.getElementById('staffListHeaderTitle').textContent = 'Riwayat Staf';
+    renderStaffDetail();
+  });
+});
+
+document.getElementById('clearPeriodeFilterBtnStaf').addEventListener('click', () => {
+  document.querySelectorAll('.staff-tab-btn').forEach(b => b.classList.remove('active'));
+  document.querySelector('.staff-tab-btn[data-filter="periode"]').classList.add('active');
+  currentStaffFilter = 'periode';
+  document.getElementById('clearPeriodeFilterBtnStaf').style.display = 'none';
+  document.getElementById('staffListHeaderTitle').textContent = 'Riwayat Staf';
+  renderStaffDetail();
+});
+
+function hapusRecordStaf(id){
+  mintaKonfirmasi('Yakin ingin menghapus catatan ini dari data ' + (selectedStaff.nama||selectedStaff.email) + '? Saldo akan berubah.', async () => {
+    try{ await deleteDoc(doc(db,'users',selectedStaff.uid,'records',id)); }
+    catch(e){ alert('Gagal menghapus: ' + e.message); }
+  });
+}
+
+document.getElementById('adminSubmitBtn').addEventListener('click', () => {
+  const nominal = Number(document.getElementById('adminNominal').value);
+  const tipe = document.getElementById('adminTipe').value;
+  const catatan = document.getElementById('adminCatatan').value.trim();
+  if(!nominal || nominal <= 0){ alert('Masukkan nominal yang valid.'); return; }
+  const nama = selectedStaff.nama || selectedStaff.email;
+  const aksi = tipe === 'tambah' ? 'menambahkan' : 'mengurangi';
+  mintaKonfirmasi(`Yakin ingin ${aksi} saldo ${nama} sebesar ${formatRp(nominal)}?${catatan ? ' ('+catatan+')' : ''}`, async () => {
+    const komisiValue = tipe === 'tambah' ? nominal : -nominal;
+    try{
+      await addDoc(collection(db,'users',selectedStaff.uid,'records'), {
+        tanggal: todayISO(), jenis:'penyesuaian', durasi:null, jarak:null,
+        komisi: komisiValue, tipe:'penyesuaian',
+        catatan: catatan || (tipe==='tambah' ? 'Penambahan saldo oleh admin' : 'Pengurangan saldo oleh admin'),
+        createdBy: auth.currentUser.email, createdAt: serverTimestamp()
+      });
+      document.getElementById('adminNominal').value = '';
+      document.getElementById('adminCatatan').value = '';
+    }catch(e){ alert('Gagal menyimpan penyesuaian: ' + e.message); }
+  });
+});
+
+// ---- Backup ----
+document.getElementById('backupBtn').addEventListener('click', async () => {
+  const btn = document.getElementById('backupBtn');
+  btn.textContent = 'Menyiapkan backup...';
+  btn.disabled = true;
+  try{
+    const usersSnap = await getDocs(collection(db,'users'));
+    const semuaData = [];
+    for(const userDoc of usersSnap.docs){
+      const recordsSnap = await getDocs(collection(db,'users',userDoc.id,'records'));
+      semuaData.push({
+        uid: userDoc.id,
+        ...userDoc.data(),
+        records: recordsSnap.docs.map(r => ({ id:r.id, ...r.data() }))
+      });
+    }
+    const backupObj = { dibuatPada: new Date().toISOString(), jumlahPengguna: semuaData.length, data: semuaData };
+    const blob = new Blob([JSON.stringify(backupObj, null, 2)], { type:'application/json' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = 'backup-catatan-komisi-' + todayISO() + '.json';
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+    URL.revokeObjectURL(url);
+  }catch(e){
+    alert('Gagal membuat backup: ' + e.message);
+  }
+  btn.textContent = '⬇ Download Backup Data';
+  btn.disabled = false;
+});
+
+// ---- Navigasi halaman dalam-section (bottom nav) ----
+function setupBottomNav(navId, pageSelector){
+  const nav = document.getElementById(navId);
+  if(!nav) return null;
+  const btns = Array.from(nav.querySelectorAll('.nav-btn'));
+  const indicator = nav.querySelector('.nav-indicator');
+  const pages = Array.from(document.querySelectorAll(pageSelector));
+
+  function letakkanIndikator(btn){
+    if(!btn || !indicator) return;
+    indicator.style.left = (btn.offsetLeft + btn.offsetWidth/2 - indicator.offsetWidth/2) + 'px';
+  }
+  function ke(pageName){
+    pages.forEach(p => p.classList.toggle('active', p.dataset.page === pageName));
+    btns.forEach(b => b.classList.toggle('active', b.dataset.page === pageName));
+    letakkanIndikator(btns.find(b => b.dataset.page === pageName));
+  }
+  btns.forEach(btn => btn.addEventListener('click', () => ke(btn.dataset.page)));
+  window.addEventListener('resize', () => letakkanIndikator(btns.find(b => b.classList.contains('active'))));
+  setTimeout(() => letakkanIndikator(btns.find(b => b.classList.contains('active'))), 60);
+  return ke;
+}
+const gantiHalamanPersonal = setupBottomNav('navPersonal', '#personalSection > .page-view');
+document.querySelector('#navPersonal .nav-btn[data-page="kalender"]').addEventListener('click', renderKalender);
+const gantiHalamanStaf = setupBottomNav('navStaff', '#staffDetailView > .page-view');
+
+// ---- Pengaturan ----
+const settingsModal = document.getElementById('settingsModal');
+function bukaSettingsModal(){
+  document.getElementById('setPotonganSakit').value = pengaturan.potonganSakit;
+  document.getElementById('setNominalBackup').value = pengaturan.nominalBackup;
+  document.getElementById('setThemeSwitch').checked = pengaturan.theme === 'light';
+  document.getElementById('setAccentColor').value = pengaturan.accentColor;
+  document.querySelectorAll('.warna-swatch').forEach(s => s.classList.toggle('active', s.dataset.color.toLowerCase() === pengaturan.accentColor.toLowerCase()));
+  document.getElementById('settingsError').style.display = 'none';
+  settingsModal.classList.add('show');
+}
+function tutupSettingsModal(){ settingsModal.classList.remove('show'); }
+document.getElementById('settingsToggleBtn').addEventListener('click', bukaSettingsModal);
+document.getElementById('settingsCancelBtn').addEventListener('click', tutupSettingsModal);
+
+document.getElementById('setThemeSwitch').addEventListener('change', (e) => {
+  terapkanTema(e.target.checked ? 'light' : 'dark', document.getElementById('setAccentColor').value);
+});
+document.getElementById('setAccentColor').addEventListener('input', (e) => {
+  terapkanTema(document.getElementById('setThemeSwitch').checked ? 'light' : 'dark', e.target.value);
+  document.querySelectorAll('.warna-swatch').forEach(s => s.classList.remove('active'));
+});
+document.querySelectorAll('.warna-swatch').forEach(sw => {
+  sw.addEventListener('click', () => {
+    const c = sw.dataset.color;
+    document.getElementById('setAccentColor').value = c;
+    terapkanTema(document.getElementById('setThemeSwitch').checked ? 'light' : 'dark', c);
+    document.querySelectorAll('.warna-swatch').forEach(s => s.classList.toggle('active', s === sw));
+  });
+});
+
+document.getElementById('settingsSaveBtn').addEventListener('click', async () => {
+  const potonganSakit = Number(document.getElementById('setPotonganSakit').value) || 0;
+  const nominalBackup = Number(document.getElementById('setNominalBackup').value) || 0;
+  const theme = document.getElementById('setThemeSwitch').checked ? 'light' : 'dark';
+  const accentColor = document.getElementById('setAccentColor').value;
+  const errEl = document.getElementById('settingsError');
+  const btn = document.getElementById('settingsSaveBtn');
+  btn.disabled = true; btn.textContent = 'Menyimpan...';
+  try{
+    await updateDoc(doc(db,'users',auth.currentUser.uid), { potonganSakit, nominalBackup, theme, accentColor });
+    pengaturan = { potonganSakit, nominalBackup, theme, accentColor };
+    updateKehadiranTodayUI();
+    renderPersonal();
+    tutupSettingsModal();
+  }catch(e){
+    errEl.textContent = 'Gagal menyimpan: ' + e.message;
+    errEl.style.display = 'block';
+  }
+  btn.disabled = false; btn.textContent = 'Simpan';
+});
+
+// ---- Init ----
+updateAuthUI();
+tanggalInput.value = todayISO();
+populateDurasi();
+
+(async function tampilkanJumlahPengguna(){
+  try{
+    const snap = await getDoc(doc(db,'public','stats'));
+    const jumlah = snap.exists() ? (snap.data().jumlahAkun || 0) : 0;
+    if(jumlah > 0){
+      const el = document.getElementById('userCountText');
+      el.textContent = '👥 ' + jumlah + ' orang menggunakan aplikasi ini';
+      el.style.display = 'block';
+    }
+  }catch(e){ /* kalau gagal baca, diamkan saja, tidak wajib tampil */ }
+})();
+</script>
+
+<script>
+(function(){
+  function tambahRipple(btn, x, y){
+    const rect = btn.getBoundingClientRect();
+    const ripple = document.createElement('span');
+    ripple.className = 'btn-ripple';
+    const size = Math.max(rect.width, rect.height) * 1.6;
+    ripple.style.width = ripple.style.height = size + 'px';
+    ripple.style.left = (x - rect.left - size / 2) + 'px';
+    ripple.style.top = (y - rect.top - size / 2) + 'px';
+    btn.appendChild(ripple);
+    ripple.addEventListener('animationend', () => ripple.remove());
+    setTimeout(() => ripple.remove(), 700);
+  }
+  document.addEventListener('click', function(e){
+    const btn = e.target.closest('.btn');
+    if(!btn) return;
+    const x = e.clientX || (btn.getBoundingClientRect().left + btn.offsetWidth / 2);
+    const y = e.clientY || (btn.getBoundingClientRect().top + btn.offsetHeight / 2);
+    tambahRipple(btn, x, y);
+  });
+})();
+</script>
+</body>
+</html>
